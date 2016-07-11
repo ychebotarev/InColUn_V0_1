@@ -50,5 +50,29 @@ namespace Helpers
             var generatedHash = GeneratePasswordHash(password, salt);
             return string.CompareOrdinal(passwordHash, generatedHash) == 0;
         }
+
+        public static RSAParameters GetRandomRSAParameters()
+        {
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                try
+                {
+                    return rsa.ExportParameters(true);
+                }
+                finally
+                {
+                    rsa.PersistKeyInCsp = false;
+                }
+            }
+        }
+
+        public static byte[] GetRandomBytes(int cnt)
+        {
+            var cryptoProvider = new RNGCryptoServiceProvider();
+            byte[] bytes = new byte[cnt];
+            cryptoProvider.GetNonZeroBytes(bytes);
+
+            return bytes;
+        }
     }
 }
