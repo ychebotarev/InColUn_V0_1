@@ -9,10 +9,10 @@ namespace Helpers
 {
     public class Crypto
     {
-        private static Random random;
+        private static Random random = new Random();
         public static void Init(int? seed)
         {
-            if (Crypto.random == null) Crypto.random = seed.HasValue? new Random(seed.Value): new Random();
+            Crypto.random = seed.HasValue? new Random(seed.Value): new Random();
         }
 
         public static Tuple<string, long> GeneratePasswordHashSalt(string password)

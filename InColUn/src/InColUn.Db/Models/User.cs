@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InColUn.Models
+namespace InColUn.Db.Models
 {
     public class User
     {
