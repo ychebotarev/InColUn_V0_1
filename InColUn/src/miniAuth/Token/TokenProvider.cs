@@ -2,14 +2,16 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+
+using LoggerFacade;
 
 namespace miniAuth.Token
 {
     public class TokenProvider
     {
-        private readonly TokenProviderOptions _options;
+        private readonly TokenProviderOptions options;
+        private ILogger logger;
         private static SigningCredentials _signingCredentials;
         private static readonly Object s_lock = new Object();
 
@@ -21,9 +23,10 @@ namespace miniAuth.Token
         /// <param name="loggerFactory"></param>
         public TokenProvider(
                     TokenProviderOptions options,
-                    ILoggerFactory loggerFactory)
+                    ILogger logger)
         {
-            this._options = options;
+            this.logger = logger;
+            this.options = options;
         }
 
         /// <summary>
@@ -65,19 +68,19 @@ namespace miniAuth.Token
 
             // Create the JWT and write it to a string
             var jwt = new JwtSecurityToken(
-                issuer: _options.Issuer,
-                audience: _options.Audience,
+                issuer: this.options.Issuer,
+                audience: this.options.Audience,
                 claims: claims,
                 notBefore: now,
-                expires: now.Add(_options.Expiration),
-                signingCredentials: _options.SigningCredentials ?? TokenProvider.DefaultSigningCredentials());
+                expires: now.Add(this.options.Expiration),
+                signingCredentials: this.options.SigningCredentials ?? TokenProvider.DefaultSigningCredentials());
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             return new TokenResponse
             {
                 access_token = encodedJwt,
-                expires_in = (ulong)_options.Expiration.TotalSeconds
+                expires_in = (ulong)this.options.Expiration.TotalSeconds
             };
         }
 
@@ -86,14 +89,14 @@ namespace miniAuth.Token
             var handler = new JwtSecurityTokenHandler();
             if (!handler.CanValidateToken) return null;
 
-            var signedCredentials = _options.SigningCredentials ?? TokenProvider.DefaultSigningCredentials();
+            var signedCredentials = this.options.SigningCredentials ?? TokenProvider.DefaultSigningCredentials();
 
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidIssuer = _options.Issuer,
+                ValidIssuer = this.options.Issuer,
                 ValidateAudience = true,
-                ValidAudience = _options.Audience,
+                ValidAudience = this.options.Audience,
                 ValidateLifetime = true,
                 IssuerSigningKey = signedCredentials.Key
             };
@@ -116,7 +119,11 @@ namespace miniAuth.Token
             }
             catch(Exception e)
             {
-                //log it?
+                if (this.logger != null)
+                {
+                    var logEntry = new LogEntry(LoggingEventType.Error, string.Format("Token validation exception for: {0}", accessToken), e);
+                    this.logger.Log(logEntry);
+                }
             }
 
             return result;

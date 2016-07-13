@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 
 namespace InColUn.Auth
 {
@@ -19,8 +18,8 @@ namespace InColUn.Auth
 
         public ICollection<string> Scope { get; } = new HashSet<string>();
 
-        public Func<HttpContext, ClaimsIdentity, string, Task> OnOAuthSuccess { get; set; }
-        public Func<HttpContext, string, string, Task> OnOAuthFailure { get; set; }
+        public Func<ClaimsIdentity, string, Task> OnOAuthSuccess { get; set; }
+        public Func<string, string, Task> OnOAuthFailure { get; set; }
 
         public virtual string FormatScope()
         {

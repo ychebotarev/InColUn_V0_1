@@ -1,5 +1,4 @@
-﻿using System;
-using Helpers;
+﻿using Helpers;
 using InColUn.Db.Models;
 using Dapper;
 
@@ -7,7 +6,7 @@ namespace InColUn.Db
 {
     public class UserTableService : BasicTableService
     {
-        public UserTableService(MySqlDBContext dbContext):base(dbContext)
+        public UserTableService(IDbContext dbContext):base(dbContext)
         {
         }
 
@@ -18,7 +17,7 @@ namespace InColUn.Db
         /// <returns>Return user. If user was not found - returns null.</returns>
         public User FindUserById(long Id)
         {
-            var connection = this._dbContext.GetDbConnection();
+            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from users where id = {0}", Id);
             var user = connection.QuerySingleOrDefault<User>(query);
 
@@ -33,7 +32,7 @@ namespace InColUn.Db
         /// <returns>Return user. If user was not found - returns null.</returns>
         public User FindUserByLoginString(string loginString)
         {
-            var connection = this._dbContext.GetDbConnection();
+            var connection = this.dbContext.GetDbConnection();
             //var query = string.Format("select * from users where login_string = '{0}'", loginString);
             var user = connection.QuerySingleOrDefault<User>
                 ("select * from users where login_string = @login_string", new { login_string  = loginString });
@@ -48,7 +47,7 @@ namespace InColUn.Db
         public void DeleteUserById(long Id)
         {
             var deleteQuery = string.Format("DELETE FROM users WHERE id = {0}",Id);
-            this._dbContext.GetDbConnection().Execute(deleteQuery);
+            this.dbContext.GetDbConnection().Execute(deleteQuery);
         }
 
         /// <summary>

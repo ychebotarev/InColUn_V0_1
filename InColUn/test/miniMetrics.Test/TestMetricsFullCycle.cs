@@ -63,19 +63,19 @@ namespace miniMetrics.Test
         [TestMethod]
         public async Task MultiTask()
         {
-            var metrics = new Metrics("test");
+            var metrics = new MetricsService("test");
 
-            metrics.Counters.Register("test.counters.one");
-            metrics.Counters.Register("test.counters.two");
+            metrics.Counters.AddCounter("test.counters.one");
+            metrics.Counters.AddCounter("test.counters.two");
 
-            metrics.Rates.Register("test.rate.one");
-            metrics.Rates.Register("test.rate.two");
+            metrics.Rates.AddMeter("test.rate.one");
+            metrics.Rates.AddMeter("test.rate.two");
 
-            metrics.Snapshots.Register("test.snapshot.one");
-            metrics.Snapshots.Register("test.snapshot.two");
+            metrics.Snapshots.AddSnapshot("test.snapshot.one");
+            metrics.Snapshots.AddSnapshot("test.snapshot.two");
 
-            metrics.Intervals.Register("test.intervals.one");
-            metrics.Intervals.Register("test.intervals.two");
+            metrics.Intervals.AddInterval("test.intervals.one");
+            metrics.Intervals.AddInterval("test.intervals.two");
 
             //fill values
             var taskCounters1 = Task.Run( () => GenerateCounters(metrics, "test.counters.one", "test.counters.two"));
@@ -108,7 +108,7 @@ namespace miniMetrics.Test
 
         }
 
-        private long GenerateIntervals(Metrics metrics, string name)
+        private long GenerateIntervals(MetricsService metrics, string name)
         {
             var r = new Random();
             long cycles = 50 + r.Next() % 200;
@@ -123,7 +123,7 @@ namespace miniMetrics.Test
             return cycles;
         }
 
-        private long GenerateSnapshots(Metrics metrics, string name1, string name2)
+        private long GenerateSnapshots(MetricsService metrics, string name1, string name2)
         {
             var r = new Random();
             long cycles = 50 + r.Next() % 200;
@@ -133,17 +133,17 @@ namespace miniMetrics.Test
                 {
                     if (x % 2 == 0)
                     {
-                        metrics.Snapshots.Add(name1, x);
+                        metrics.Snapshots.AddSnapshotValue(name1, x);
                     }
                     else
                     {
-                        metrics.Snapshots.Add(name2, x);
+                        metrics.Snapshots.AddSnapshotValue(name2, x);
                     }
                 });
             return cycles;
         }
 
-        private long GenerateCounters(Metrics metrics, string name1, string name2)
+        private long GenerateCounters(MetricsService metrics, string name1, string name2)
         {
             var r = new Random();
             long cycles = 50 + r.Next() % 200;
@@ -164,7 +164,7 @@ namespace miniMetrics.Test
             return cycles;
         }
 
-        private long GenerateRates(Metrics metrics, string name1, string name2)
+        private long GenerateRates(MetricsService metrics, string name1, string name2)
         {
             var r = new Random();
             long cycles = 50 + r.Next() % 200;

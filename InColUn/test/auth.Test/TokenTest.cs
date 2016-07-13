@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 namespace auth.Test
 {
     [TestClass]
-    public class TokesTest
+    public class TokenTest
     {
         [TestMethod]
         public void TokenAcceptanceTest()

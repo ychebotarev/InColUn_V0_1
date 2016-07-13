@@ -14,7 +14,7 @@ namespace InColUn.Db.Test
         public void TestInitialize()
         {
             var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            this.dbContext = new MySqlDBContext(connectionString);
+            this.dbContext = new MySqlDBContext(connectionString, null);
             this.userTable = new UserTableService(dbContext);
 
             userTable.DeleteUserById(1);

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace InColUn.Auth
 {
@@ -25,6 +27,22 @@ namespace InColUn.Auth
             var strategy = this[authScheme];
             await strategy.StartOAuthAsync(context);
         }
+
+        public async Task StartAuthentificationAsync(
+            HttpContext context, 
+            string authScheme,
+            Func<ClaimsIdentity, string, Task> onOAuthSuccess,
+            Func<string, string, Task> onOAuthFailure
+            )
+        {
+            var strategy = this[authScheme];
+            var options = strategy.GetOptions();
+            options.OnOAuthSuccess = onOAuthSuccess;
+            options.OnOAuthFailure = onOAuthFailure;
+
+            await strategy.StartOAuthAsync(context);
+        }
+
 
         public void AddStrategy(IOAuthStrategy strategy)
         {

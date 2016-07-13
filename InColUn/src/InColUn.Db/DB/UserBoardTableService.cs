@@ -17,7 +17,7 @@ namespace InColUn.Db
 
     public class UserBoardTableService : BasicTableService
     {
-        public UserBoardTableService(MySqlDBContext dbContext)
+        public UserBoardTableService(IDbContext dbContext)
             :base(dbContext)
         {
         }
@@ -55,7 +55,7 @@ namespace InColUn.Db
         public long GetBoardOwner(long boardid)
         {
             var selectQuery = string.Format("SELECT * FROM userboards WHERE boardid = {0} and relation = 'O'", boardid);
-            var owners = this._dbContext.GetDbConnection().Query<long>(selectQuery).ToList();
+            var owners = this.dbContext.GetDbConnection().Query<long>(selectQuery).ToList();
 
             if (owners.Count == 0) return 0;
 
@@ -73,17 +73,17 @@ namespace InColUn.Db
             var userBoard = this.FindUserBoard(userId, boardId);
             if(userBoard != null && userBoard.relation == "O")
             {
-                var boardsService = this._dbContext.GetTableService<BoardsTableService>();
+                var boardsService = this.dbContext.GetTableService<BoardsTableService>();
                 boardsService.SetBoardStatus(boardId, "D");
             }
 
             var deleteQuery = string.Format("DELETE FROM userboards WHERE userid = {0} and boardid = {1}", userId, boardId);
-            this._dbContext.GetDbConnection().Execute(deleteQuery);
+            this.dbContext.GetDbConnection().Execute(deleteQuery);
         }
 
         public UserBoard FindUserBoard(long userId, long boardId)
         {
-            var connection = this._dbContext.GetDbConnection();
+            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from userboards where userid = {0} and boardid = {1}", userId, boardId);
             var userBoard = connection.QuerySingleOrDefault<UserBoard>(query);
 
@@ -92,7 +92,7 @@ namespace InColUn.Db
 
         public IEnumerable<long> GetUserBoards(long userId)
         {
-            var connection = this._dbContext.GetDbConnection();
+            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select boardid from userboards where userid = {0}", userId);
             var boards = connection.Query<long>(query);
             return boards;
@@ -101,7 +101,7 @@ namespace InColUn.Db
         public IEnumerable<long> GetUserBoards(long userId, UserBoardRelations ubRelation)
         {
             var relation = RelationString[(int)ubRelation];
-            var connection = this._dbContext.GetDbConnection();
+            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select boardid from userboards where userid = {0} and relation = '{1}'", userId, relation);
             var boards = connection.Query<long>(query);
             return boards;
@@ -109,7 +109,7 @@ namespace InColUn.Db
 
         public IEnumerable<long> GetUserOpenedBoards(long userId)
         {
-            var connection = this._dbContext.GetDbConnection();
+            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select boardid from openedboards where userid = {0}", userId);
             var boards = connection.Query<long>(query);
             return boards;
@@ -130,7 +130,7 @@ namespace InColUn.Db
         public void CloseBoard(long userId, long boardid)
         {
             var deleteQuery = string.Format("DELETE FROM openboards WHERE userid = {0} and boardid = {1}", userId, boardid);
-            this._dbContext.GetDbConnection().Execute(deleteQuery);
+            this.dbContext.GetDbConnection().Execute(deleteQuery);
         }
     }
 }

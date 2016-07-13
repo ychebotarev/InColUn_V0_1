@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E451EF3E-EC82-441E-AB7E-676D0420B2C0}</ProjectGuid>
+    <ProjectGuid>{18E90B23-549D-4246-B235-BEDA13929F4E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>miniMetrics</RootNamespace>
-    <AssemblyName>miniMetrics</AssemblyName>
+    <RootNamespace>MetricsFacade</RootNamespace>
+    <AssemblyName>MetricsFacade</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConcurrencyUtilities, Version=0.1.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ConcurrencyUtils.0.1.4\lib\net45\ConcurrencyUtilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,38 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\CounterCollection.cs" />
-    <Compile Include="Collections\GaugeCollection.cs" />
-    <Compile Include="Collections\MeterCollection.cs" />
-    <Compile Include="Collections\SnapshotCollectiion.cs" />
-    <Compile Include="Collections\TimeIntervalCollection.cs" />
-    <Compile Include="MetricsService.cs" />
+    <Compile Include="Collections\ICounterCollection.cs" />
+    <Compile Include="Collections\IGaugeCollection.cs" />
+    <Compile Include="Collections\IMeterCollection.cs" />
+    <Compile Include="Collections\ISnapshotCollectiion.cs" />
+    <Compile Include="Collections\ITimeIntervalCollection.cs" />
+    <Compile Include="IMetricsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reports\Formatters\BaseFormatter.cs" />
-    <Compile Include="Reports\BaseReporter.cs" />
-    <Compile Include="Reports\ConsoleReport.cs" />
-    <Compile Include="Reports\Formatters\HumanFormatter.cs" />
-    <Compile Include="Reports\Formatters\JsonFormatter.cs" />
-    <Compile Include="Samples\Reservoir.cs" />
-    <Compile Include="Samples\SampleSnapshot.cs" />
-    <Compile Include="Metric\Counter.cs" />
-    <Compile Include="Metric\Meter.cs" />
-    <Compile Include="Metric\Snapshot.cs" />
-    <Compile Include="Metric\TimeInterval.cs" />
-    <Compile Include="Utils\Clock.cs" />
-    <Compile Include="Utils\IHideObjectMembers.cs" />
-    <Compile Include="Utils\TimeUnit.cs" />
-    <Compile Include="Utils\TimeUnitExtensions.cs" />
-    <Compile Include="Utils\Unit.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MetricsFacade\MetricsFacade.csproj">
-      <Project>{18e90b23-549d-4246-b235-beda13929f4e}</Project>
-      <Name>MetricsFacade</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -30,7 +30,6 @@ select * from `incolun`.`boards` ;
 /*
 relation:
 O - owner
-F - forked
 V - viewer
 C - contributer
 F - forked (saved public board)
@@ -51,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `incolun`.`userboards`
 		ON UPDATE NO ACTION,
   CONSTRAINT `boardid`
     FOREIGN KEY (`boardid`)
-		REFERENCES `incolun`.`boards` (`boardid`)
+		REFERENCES `incolun`.`boards` (`id`)
 		ON DELETE CASCADE
 		ON UPDATE NO ACTION
 )

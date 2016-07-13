@@ -79,6 +79,10 @@
       <Project>{287b4008-eea7-459e-975a-85fcfa544020}</Project>
       <Name>InColUn.Db</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\LoggerFacade\LoggerFacade.csproj">
+      <Project>{692c4230-00ac-447f-a40e-0cb1485e69d4}</Project>
+      <Name>LoggerFacade</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

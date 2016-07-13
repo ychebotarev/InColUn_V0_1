@@ -75,10 +75,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="TokesTest.cs" />
+    <Compile Include="TokenTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\LoggerFacade\LoggerFacade.csproj">
+      <Project>{692c4230-00ac-447f-a40e-0cb1485e69d4}</Project>
+      <Name>LoggerFacade</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\miniAuth\miniAuth.csproj">
       <Project>{5ea034ba-84ce-4afa-9c22-c3ffcd3de0b2}</Project>
       <Name>miniAuth</Name>

@@ -8,13 +8,13 @@ namespace InColUn.Db
 {
     public class BoardsTableService : BasicTableService
     {
-        public BoardsTableService(MySqlDBContext dbContext):base(dbContext)
+        public BoardsTableService(IDbContext dbContext):base(dbContext)
         {
         }
 
         public Board FindBoardById(long Id)
         {
-            var connection = this._dbContext.GetDbConnection();
+            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from boards where id = {0}", Id);
             var board = connection.QuerySingleOrDefault<Board>(query);
 
@@ -23,7 +23,7 @@ namespace InColUn.Db
 
         public IEnumerable<Board> GetBoards(long boardid)
         {
-            var connection = this._dbContext.GetDbConnection();
+            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from boards where boardid = {0}", boardid);
             var boards = connection.Query<Board>(query);
             return boards;
@@ -43,7 +43,7 @@ namespace InColUn.Db
         public void DeleteBoardById(long Id)
         {
             var deleteQuery = string.Format("DELETE FROM boards WHERE id = {0}", Id);
-            this._dbContext.GetDbConnection().Execute(deleteQuery);
+            this.dbContext.GetDbConnection().Execute(deleteQuery);
         }
 
         public bool CreateSection(long id, string title, long? parentId, long? boardId )

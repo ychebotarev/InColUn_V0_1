@@ -1,7 +1,9 @@
-﻿using miniMetrics.Metric;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Timers;
+
+using miniMetrics.Metric;
+using MetricsFacade.Collections;
 
 namespace miniMetrics.Collections
 {
@@ -55,7 +57,7 @@ namespace miniMetrics.Collections
         }
     }
 
-    public class MeterCollection
+    public class MeterCollection : Utils.IHideObjectMembers, IMeterCollection
     {
         private Dictionary<MeterIntervals, MeterGroup> rates;
 
@@ -66,14 +68,31 @@ namespace miniMetrics.Collections
             rates[MeterIntervals.oneMin] = new MeterGroup(1000 * 60);
         }
 
+        public void Stop()
+        {
+            this.Stop(MeterIntervals.oneMin);
+            this.Stop(MeterIntervals.tenSec);
+        }
+
         public void Stop(MeterIntervals rateUnit)
         {
             rates[rateUnit].Stop();
         }
 
+        public void Start()
+        {
+            this.Start(MeterIntervals.oneMin);
+            this.Start(MeterIntervals.tenSec);
+        }
+
         public void Start(MeterIntervals rateUnit)
         {
             rates[rateUnit].Start();
+        }
+
+        public double GetMeterRate(string name)
+        {
+            return this[name].Value;
         }
 
         public Meter this[string name]
@@ -94,7 +113,7 @@ namespace miniMetrics.Collections
             }
         }
 
-        public void AddRate(string name, MeterIntervals rateUnit)
+        public void AddMeter(string name, MeterIntervals rateUnit)
         {
             var rateGroup = this.rates[rateUnit];
             if (rateGroup.meters.ContainsKey(name)) return;
@@ -102,14 +121,9 @@ namespace miniMetrics.Collections
             rateGroup.meters[name] = Meter.createM1Rate();
         }
 
-        public void AddRate(string name)
+        public void AddMeter(string name)
         {
-            this.AddRate(name, MeterIntervals.tenSec);
-        }
-
-        public void Register(string name)
-        {
-            this.AddRate(name);
+            this.AddMeter(name, MeterIntervals.tenSec);
         }
 
         private MeterGroup GetGroup(string name)
@@ -128,16 +142,16 @@ namespace miniMetrics.Collections
             return group != null;
         }
 
-        public bool Mark(string name)
-        {
-            return this.Increment(name);
-        }
-
-        public bool Update(string name, long value)
+        public bool Increment(string name, long value)
         {
             var group = this.GetGroup(name);
             if (group != null) group.meters[name].Update(value);
             return group != null;
+        }
+
+        public bool Mark(string name)
+        {
+            return this.Increment(name);
         }
     }
 }

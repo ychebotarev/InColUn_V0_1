@@ -1,21 +1,31 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+
 using miniMetrics.Metric;
+using MetricsFacade.Collections;
 
 namespace miniMetrics.Collections
 {
-    class SnapshotCollectiion : Utils.IHideObjectMembers
+    class SnapshotCollectiion : Utils.IHideObjectMembers, ISnapshotCollectiion
     {
-        private ConcurrentDictionary<string, ConcurrentBag<Snapshot>> _snapshots = new ConcurrentDictionary<string, ConcurrentBag<Snapshot>>();
+        private ConcurrentDictionary<string, ConcurrentBag<Snapshot>> snapshots = new ConcurrentDictionary<string, ConcurrentBag<Snapshot>>();
 
-        public void Register(string name)
+        public void AddSnapshot(string name)
         {
-            if (this._snapshots.ContainsKey(name)) return;
-            this._snapshots[name] = new ConcurrentBag<Snapshot>();
+            if (this.snapshots.ContainsKey(name)) return;
+            this.snapshots[name] = new ConcurrentBag<Snapshot>();
         }
 
-        public void Add(string name, double value)
+        public void AddSnapshotValue(string name, double value)
         {
-            this._snapshots[name].Add(new Snapshot(value));
+            this.snapshots[name].Add(new Snapshot(value));
+        }
+
+        public IEnumerable<Tuple<DateTime, double>> GetSnaphotValues(string name)
+        {
+            return this.snapshots[name].ToArray().Select(s => new Tuple<DateTime, double>(s.Date, s.Value));
         }
     }
 }

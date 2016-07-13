@@ -29,6 +29,11 @@ namespace InColUn.Auth
             this.Validate();
         }
 
+        public OAuthStrategyOptions GetOptions()
+        {
+            return this.Options;
+        }
+
         public void SetBackChannel(HttpClient client)
         {
             this.Backchannel = client;
@@ -62,13 +67,14 @@ namespace InColUn.Auth
             var token = await this.GetTokenAsync(context, code);
             if(string.IsNullOrEmpty(token.AccessToken))
             {
-                await this.ProcessCustomError(context, "access token is missing");
+                await this.ProcessCustomError("access token is missing");
                 return;
             }
 
             var claims = await this.GetUserClaimsAsync(context, token);
 
-            await this.Options.OnOAuthSuccess(context, claims, this.AuthScheme);
+            if(this.Options.OnOAuthSuccess != null)
+                await this.Options.OnOAuthSuccess(claims, this.AuthScheme);
         }
 
 
@@ -148,17 +154,20 @@ namespace InColUn.Auth
                 failureMessage.Append(";Uri=").Append(errorUri);
             }
 
-            await this.Options.OnOAuthFailure(context, failureMessage.ToString(), this.AuthScheme);
+            if (this.Options.OnOAuthFailure != null)
+                await this.Options.OnOAuthFailure(failureMessage.ToString(), this.AuthScheme);
         }
 
         protected async Task ProcessStateError(HttpContext context)
         {
-            await this.Options.OnOAuthFailure(context, "Login failed. Wrong state", this.AuthScheme);
+            if (this.Options.OnOAuthFailure != null)
+                await this.Options.OnOAuthFailure("Login failed. Wrong state", this.AuthScheme);
         }
 
-        protected async Task ProcessCustomError(HttpContext context, string error)
+        protected async Task ProcessCustomError(string error)
         {
-            await this.Options.OnOAuthFailure(context, error, this.AuthScheme);
+            if(this.Options.OnOAuthFailure != null)
+                await this.Options.OnOAuthFailure(error, this.AuthScheme);
         }
 
         protected string BuildRedirectUri(HttpContext context)

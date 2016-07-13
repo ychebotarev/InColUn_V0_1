@@ -175,6 +175,10 @@
       <Project>{7070d574-6d2d-4a2c-bcde-e7942d1c9830}</Project>
       <Name>Helpers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LoggerFacade\LoggerFacade.csproj">
+      <Project>{692c4230-00ac-447f-a40e-0cb1485e69d4}</Project>
+      <Name>LoggerFacade</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

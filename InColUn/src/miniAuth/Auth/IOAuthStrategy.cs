@@ -9,6 +9,7 @@ namespace InColUn.Auth
         void SetBackChannel(HttpClient client);
         Task StartOAuthAsync(HttpContext context);
         Task ProcessCallbackAsync(HttpContext context);
+        OAuthStrategyOptions GetOptions();
 
         string AuthScheme { get; }
     }

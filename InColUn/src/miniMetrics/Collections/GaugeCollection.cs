@@ -1,28 +1,34 @@
 ﻿using System.Collections.Concurrent;
 using miniMetrics.Metric;
+using MetricsFacade.Collections;
 
 namespace miniMetrics.Collections
 {
-    class GaugeCollection
+    class GaugeCollection : Utils.IHideObjectMembers, IGaugeCollection
     {
-        private ConcurrentDictionary<string, double> _gauges = new ConcurrentDictionary<string, double>();
+        private ConcurrentDictionary<string, double> gauges = new ConcurrentDictionary<string, double>();
 
         public void Register(string name)
         {
-            if (this._gauges.ContainsKey(name)) return;
-            this._gauges[name] = 0.0;
+            if (this.gauges.ContainsKey(name)) return;
+            this.gauges[name] = 0.0;
         }
 
-        public void Add(string name, double value)
+        public void AddGauge(string name, double value)
         {
             this.Register(name);
-            this._gauges[name] = value;
+            this.gauges[name] = value;
+        }
+
+        public double GetGauge(string name)
+        {
+            return this[name];
         }
 
         public double this[string name]
         {
-            get { this.Register(name); return this._gauges[name]; }
-            set { this.Register(name); this._gauges[name] = value; }
+            get { this.Register(name); return this.gauges[name]; }
+            set { this.Register(name); this.gauges[name] = value; }
         }
     }
 }
