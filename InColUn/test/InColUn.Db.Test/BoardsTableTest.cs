@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using InColUn.Db;
 
 namespace InColUn.Db.Test
 {
@@ -18,11 +16,10 @@ namespace InColUn.Db.Test
             var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
             this.dbContext = new MySqlDBContext(connectionString);
 
-            
             var userTable = new UserTableService(dbContext);
-            this.dbContext.AddTableService(userTable);
-
             var boardsTable = new BoardsTableService(dbContext);
+
+            this.dbContext.AddTableService(userTable);
             this.dbContext.AddTableService(boardsTable);
 
             userTable.CreateLocalUser(1, "test", "test", "test@test.com");

@@ -2,10 +2,9 @@
 
 namespace miniMetrics
 {
-    class Metrics
+    class MetricsService
     {
-        public static Metrics gi = new Metrics("global");
-
+        public static MetricsService gi = new MetricsService("global");
 
         public CounterCollection Counters = new CounterCollection();
         public MeterCollection Rates = new MeterCollection();
@@ -13,7 +12,7 @@ namespace miniMetrics
         public TimeIntervalCollection Intervals = new TimeIntervalCollection();
         public GaugeCollection Gauges = new GaugeCollection();
 
-        public Metrics(string name)
+        public MetricsService(string name)
         {
             this.Name = name;
         }

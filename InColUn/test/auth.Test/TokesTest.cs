@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using miniAuth.Token;
 using System.Security.Cryptography;
 
-
 namespace auth.Test
 {
     [TestClass]
@@ -14,8 +13,6 @@ namespace auth.Test
         [TestMethod]
         public void TokenAcceptanceTest()
         {
-            //var signingCredentials = TokenProvider.DefaultSigningCredentials();
-
             var cryptoProvider = new RNGCryptoServiceProvider();
             byte[] keyForHmacSha256 = new byte[64];
             cryptoProvider.GetNonZeroBytes(keyForHmacSha256);
@@ -44,8 +41,6 @@ namespace auth.Test
         [TestMethod]
         public void TokenExpirationTest()
         {
-            //var signingCredentials = TokenProvider.DefaultSigningCredentials();
-
             var cryptoProvider = new RNGCryptoServiceProvider();
             byte[] keyForHmacSha256 = new byte[64];
             cryptoProvider.GetNonZeroBytes(keyForHmacSha256);
@@ -104,7 +99,6 @@ namespace auth.Test
 
             var output = string.Format("{0} tokens/sec", 1000.0 * limit / stopwatch.Elapsed.TotalMilliseconds);
             Console.WriteLine(output);
-
         }
     }
 }

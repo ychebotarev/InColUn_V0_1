@@ -2,7 +2,7 @@
 
 namespace miniMetrics.Metric
 {
-    class Counter: Utils.IHideObjectMembers
+    public class Counter: Utils.IHideObjectMembers
     {
         private AtomicLong _value;
 

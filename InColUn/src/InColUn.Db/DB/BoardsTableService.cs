@@ -46,7 +46,6 @@ namespace InColUn.Db
             this._dbContext.GetDbConnection().Execute(deleteQuery);
         }
 
-
         public bool CreateSection(long id, string title, long? parentId, long? boardId )
         {
             var insertQuery = "INSERT INTO boards (id, title, parentid, boardid)" +
@@ -57,6 +56,17 @@ namespace InColUn.Db
                 parentId=parentId,
                 boardid = boardId,
                 title = title
+            });
+        }
+
+        public bool SetBoardStatus(long id, string status)
+        {
+            var updateQuery = "UPDATE boards SET status = @status WHERE id = @id";
+
+            return this.ExecuteUpdate(updateQuery, new
+            {
+                id = id,
+                status = status
             });
         }
     }

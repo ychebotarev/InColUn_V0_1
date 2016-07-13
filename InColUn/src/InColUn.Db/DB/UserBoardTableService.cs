@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Helpers;
 using InColUn.Db.Models;
@@ -6,19 +7,74 @@ using Dapper;
 
 namespace InColUn.Db
 {
+    public enum UserBoardRelations
+    {
+        Owner = 0,
+        Forked = 1,
+        Viewer = 2,
+        Contributer = 3
+    }
+
     public class UserBoardTableService : BasicTableService
     {
-        public UserBoardTableService(MySqlDBContext dbContext):base(dbContext)
+        public UserBoardTableService(MySqlDBContext dbContext)
+            :base(dbContext)
         {
         }
 
-        public void DelectUserBoard(long userId, long boardId)
+        public const string OwnerRelation = "O";
+        public const string ForkedRelation = "F";
+        public const string ViewerRelation = "V";
+        public const string ContributerRelation = "C";
+
+        private static string[] RelationString = new string[] { "O", "F", "V", "C" };
+
+        public bool CreateUserBoard(long userId, long boardid, UserBoardRelations ubRelation)
+        {
+            var ownerId = this.GetBoardOwner(boardid);
+            if (userId == ownerId) return false;
+
+            if (ownerId != 0 && ubRelation == UserBoardRelations.Owner) return false;
+            if (ownerId == 0 && ubRelation != UserBoardRelations.Owner) return false;
+
+            var relation = RelationString[(int)ubRelation];
+
+            var insertQuery = "INSERT INTO userboards (userid, boardid, relation)" +
+                " VALUES (@userid,@boardid, @relation)" +
+                " ON DUPLICATE KEY UPDATE" +
+                " relation = @relation";
+
+            return this.ExecuteInsert(insertQuery, new
+            {
+                userid = userId,
+                boardid = boardid,
+                relation = relation
+            });
+        }
+
+        public long GetBoardOwner(long boardid)
+        {
+            var selectQuery = string.Format("SELECT * FROM userboards WHERE boardid = {0} and relation = 'O'", boardid);
+            var owners = this._dbContext.GetDbConnection().Query<long>(selectQuery).ToList();
+
+            if (owners.Count == 0) return 0;
+
+            if(owners.Count != 1)
+            {
+                throw new ArgumentOutOfRangeException(selectQuery);
+            }
+
+            return owners.First();
+        }
+
+        public void DeleteUserBoard(long userId, long boardId)
         {
             //if user was an owner - mark board as deleted
             var userBoard = this.FindUserBoard(userId, boardId);
             if(userBoard != null && userBoard.relation == "O")
             {
-                 
+                var boardsService = this._dbContext.GetTableService<BoardsTableService>();
+                boardsService.SetBoardStatus(boardId, "D");
             }
 
             var deleteQuery = string.Format("DELETE FROM userboards WHERE userid = {0} and boardid = {1}", userId, boardId);
@@ -42,8 +98,9 @@ namespace InColUn.Db
             return boards;
         }
 
-        public IEnumerable<long> GetUserBoards(long userId, string relation)
+        public IEnumerable<long> GetUserBoards(long userId, UserBoardRelations ubRelation)
         {
+            var relation = RelationString[(int)ubRelation];
             var connection = this._dbContext.GetDbConnection();
             var query = string.Format("select boardid from userboards where userid = {0} and relation = '{1}'", userId, relation);
             var boards = connection.Query<long>(query);

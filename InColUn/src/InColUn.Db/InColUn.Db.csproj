@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\BasicDbContext.cs" />
     <Compile Include="DB\BasicTableService.cs" />
     <Compile Include="DB\BoardsTableService.cs" />
     <Compile Include="DB\IDbContext.cs" />

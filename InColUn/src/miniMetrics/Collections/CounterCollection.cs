@@ -3,7 +3,7 @@ using miniMetrics.Metric;
 
 namespace miniMetrics.Collections
 {
-    class CounterCollection : Utils.IHideObjectMembers
+    public class CounterCollection : Utils.IHideObjectMembers, ICounterCollection
     {
         public ConcurrentDictionary<string, Counter> _counters = new ConcurrentDictionary<string, Counter>();
 
@@ -18,6 +18,8 @@ namespace miniMetrics.Collections
             if (this._counters.ContainsKey(name)) return;
             this._counters[name] = new Counter();
         }
+
+        public int GetCountersCount() { return this._counters.Count; }
 
         public int Count => this._counters.Count;
 

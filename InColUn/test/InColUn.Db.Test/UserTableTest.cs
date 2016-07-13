@@ -45,7 +45,6 @@ namespace InColUn.Db.Test
 
             result = userTable.CreateLocalUser(2, "'test2", "'test", "'test2@test.com or '1");
             result.Should().BeTrue();
-
         }
 
         [TestMethod]
@@ -93,13 +92,6 @@ namespace InColUn.Db.Test
         [TestMethod]
         public void UserTableAddExternalUser()
         {
-            /*var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            var dbContext = new MySqlDBContext(connectionString);
-            var userTable = new UserTable(dbContext);
-
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);*/
-
             var result = userTable.CreateExternalUser(1, "G1", "test", "test@test.com", "G");
             result.Should().BeTrue("First call");
 
@@ -111,9 +103,6 @@ namespace InColUn.Db.Test
 
             result = userTable.CreateExternalUser(2, "G1", "test", "test@test.com", "G");
             result.Should().BeFalse("Same login string");
-
-            /*userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);*/
         }
     }
 }
