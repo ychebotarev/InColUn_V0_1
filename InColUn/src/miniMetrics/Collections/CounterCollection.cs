@@ -1,37 +1,43 @@
 ﻿using System.Collections.Concurrent;
 using miniMetrics.Metric;
+using MetricsFacade.Collections;
 
 namespace miniMetrics.Collections
 {
     public class CounterCollection : Utils.IHideObjectMembers, ICounterCollection
     {
-        public ConcurrentDictionary<string, Counter> _counters = new ConcurrentDictionary<string, Counter>();
+        public ConcurrentDictionary<string, Counter> counters = new ConcurrentDictionary<string, Counter>();
 
-        public void Register(string name)
+        public void AddCounter(string name)
         {
-            if (this._counters.ContainsKey(name)) return;
-            this._counters[name] = new Counter();
+            if (this.counters.ContainsKey(name)) return;
+            this.counters[name] = new Counter();
         }
 
-        public void Register(string name, long value)
+        public void AddCounter(string name, long value)
         {
-            if (this._counters.ContainsKey(name)) return;
-            this._counters[name] = new Counter();
+            if (this.counters.ContainsKey(name)) return;
+            this.counters[name] = new Counter(value);
         }
 
-        public int GetCountersCount() { return this._counters.Count; }
+        public int GetCountersCount() { return this.counters.Count; }
 
-        public int Count => this._counters.Count;
+        public int Count => this.counters.Count;
 
-        public void Increment(string name) { this._counters[name].Increment(); }
-        public void Increment(string name, long step) { this._counters[name].Increment(step); }
-        public void Decrement(string name) { this._counters[name].Decrement(); }
-        public void Decrement(string name, long step) { this._counters[name].Decrement(step); }
+        public void Increment(string name) { this.counters[name].Increment(); }
+        public void Increment(string name, long step) { this.counters[name].Increment(step); }
+        public void Decrement(string name) { this.counters[name].Decrement(); }
+        public void Decrement(string name, long step) { this.counters[name].Decrement(step); }
+
+        public long GetValue(string name)
+        {
+            return this[name].Value;
+        }
 
         public Counter this[string name]
         {
-            get { return this._counters[name]; }
-            set { this._counters[name] = value; }
+            get { return this.counters[name]; }
+            set { this.counters[name] = value; }
         }
     }
 }
