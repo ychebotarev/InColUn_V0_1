@@ -12,7 +12,7 @@ namespace auth.Test
     public class TokesTest
     {
         [TestMethod]
-        public void TokesAcceptanceTest()
+        public void TokenAcceptanceTest()
         {
             //var signingCredentials = TokenProvider.DefaultSigningCredentials();
 
@@ -27,7 +27,38 @@ namespace auth.Test
             {
                 Issuer = "InColUn",
                 Audience = "All",
-                SigningCredentials = signingCredentials
+                SigningCredentials = signingCredentials,
+                Expiration = TimeSpan.FromMilliseconds(1000)
+            };
+
+            var provider = new TokenProvider(options, null);
+
+            var token = provider.GenerateUserToken(1, "John Dwo");
+
+            var id = provider.ValidateToken(token.access_token);
+
+            Assert.IsNotNull(id);
+            Assert.AreEqual(1, id.Value);
+        }
+
+        [TestMethod]
+        public void TokenExpirationTest()
+        {
+            //var signingCredentials = TokenProvider.DefaultSigningCredentials();
+
+            var cryptoProvider = new RNGCryptoServiceProvider();
+            byte[] keyForHmacSha256 = new byte[64];
+            cryptoProvider.GetNonZeroBytes(keyForHmacSha256);
+
+            var securityKey = new SymmetricSecurityKey(keyForHmacSha256);
+            var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+            var options = new TokenProviderOptions
+            {
+                Issuer = "InColUn",
+                Audience = "All",
+                SigningCredentials = signingCredentials,
+                Expiration = TimeSpan.FromMilliseconds(1000)
             };
 
             var provider = new TokenProvider(options, null);

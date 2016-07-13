@@ -7,37 +7,30 @@ namespace InColUn.Db.Test
     [TestClass]
     public class UserTableTest
     {
-        //MySqlDBContext dbContext;
-        //UserTable userTable;
+        MySqlDBContext dbContext;
+        UserTableService userTable;
 
         [TestInitialize]
         public void TestInitialize()
         {
             var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            //this.dbContext = new MySqlDBContext(connectionString);
-            //this.userTable = new UserTable(dbContext);
+            this.dbContext = new MySqlDBContext(connectionString);
+            this.userTable = new UserTableService(dbContext);
 
-            //userTable.DeleteUserById(1);
-            //userTable.DeleteUserById(2);
+            userTable.DeleteUserById(1);
+            userTable.DeleteUserById(2);
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
-            //userTable.DeleteUserById(1);
-            //userTable.DeleteUserById(2);
+            userTable.DeleteUserById(1);
+            userTable.DeleteUserById(2);
         }
 
         [TestMethod]
         public void UserTableAddLocalUser()
         {
-            var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            var dbContext = new MySqlDBContext(connectionString);
-            var userTable = new UserTable(dbContext);
-
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
-
             var result = userTable.CreateLocalUser(1, "test", "test", "test@test.com");
             result.Should().BeTrue("First call");
 
@@ -50,22 +43,17 @@ namespace InColUn.Db.Test
             result = userTable.CreateLocalUser(2, "test", "test1", "test@test.com");
             result.Should().BeFalse("Same login string");
 
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
+            result = userTable.CreateLocalUser(2, "'test2", "'test", "'test2@test.com or '1");
+            result.Should().BeTrue();
+
         }
 
         [TestMethod]
         public void UserTableFindUserById()
         {
-            var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            var dbContext = new MySqlDBContext(connectionString);
-            var userTable = new UserTable(dbContext);
-
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
-
-            userTable.FindUserById(1);
-
+            Action action = () => userTable.FindUserById(1);
+            action.ShouldNotThrow();
+            
             var result = userTable.CreateLocalUser(1, "test", "test", "test@test.com");
             result.Should().BeTrue("First call");
 
@@ -79,21 +67,11 @@ namespace InColUn.Db.Test
 
             user = userTable.FindUserById(2);
             user.Should().BeNull();
-
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
         }
 
         [TestMethod]
         public void UserTableFindUserByName()
         {
-            var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            var dbContext = new MySqlDBContext(connectionString);
-            var userTable = new UserTable(dbContext);
-
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
-
             var result = userTable.CreateLocalUser(1, "test", "test", "test@test.com");
             result.Should().BeTrue("First call");
 
@@ -108,19 +86,19 @@ namespace InColUn.Db.Test
             user = userTable.FindUserByLoginString("test1@test.com"); ;
             user.Should().BeNull();
 
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
+            user = userTable.FindUserByLoginString("'test1@test.com or '1");
+            user.Should().BeNull();
         }
 
         [TestMethod]
         public void UserTableAddExternalUser()
         {
-            var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
+            /*var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
             var dbContext = new MySqlDBContext(connectionString);
             var userTable = new UserTable(dbContext);
 
             userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
+            userTable.DeleteUserById(2);*/
 
             var result = userTable.CreateExternalUser(1, "G1", "test", "test@test.com", "G");
             result.Should().BeTrue("First call");
@@ -131,11 +109,11 @@ namespace InColUn.Db.Test
             result = userTable.CreateExternalUser(1, "G2", "test", "test@test.com", "G");
             result.Should().BeFalse("Same ID");
 
-            result = userTable.CreateExternalUser(2, "G", "test", "test@test.com", "G");
+            result = userTable.CreateExternalUser(2, "G1", "test", "test@test.com", "G");
             result.Should().BeFalse("Same login string");
 
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
+            /*userTable.DeleteUserById(1);
+            userTable.DeleteUserById(2);*/
         }
     }
 }

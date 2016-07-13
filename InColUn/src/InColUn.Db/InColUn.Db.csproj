@@ -49,9 +49,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\BasicTableService.cs" />
+    <Compile Include="DB\BoardsTableService.cs" />
+    <Compile Include="DB\IDbContext.cs" />
+    <Compile Include="DB\ITableService.cs" />
     <Compile Include="DB\MySqlDBContext.cs" />
-    <Compile Include="DB\UserTable.cs" />
+    <Compile Include="DB\UserBoardTableService.cs" />
+    <Compile Include="DB\UserTableService.cs" />
+    <Compile Include="Models\Board.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserBoard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
