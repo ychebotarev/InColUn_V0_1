@@ -6,9 +6,6 @@ using FluentAssertions;
 
 namespace helpers.Test
 {
-    /// <summary>
-    /// Summary description for CryptoUnitTest
-    /// </summary>
     [TestClass]
     public class CryptoUnitTest
     {

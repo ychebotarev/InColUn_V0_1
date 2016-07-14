@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using Xunit;
 
 namespace FlakeGen.Test
 {
-    [TestClass]
     public class IdStringGeneratorWrapperTest
     {
         private const int HowManyIds = 15000;
@@ -43,73 +42,73 @@ namespace FlakeGen.Test
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyToStringDefaul()
         {
             var generator = new IdStringGeneratorWrapper(new FakeIdGenerator(5416969582936064L));
 
-            Assert.AreEqual("5416969582936064", generator.GenerateId());
+            Assert.Equal("5416969582936064", generator.GenerateId());
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyBase32()
         {
             var generator = new IdStringGeneratorWrapper(
                 new FakeIdGenerator(0L, 1L, 10L, 63L, 64L, 0x7FFFFFFFFFFFFFFFL),
                 IdStringGeneratorWrapper.Base32);
 
-            Assert.AreEqual("0", generator.GenerateId());
-            Assert.AreEqual("1", generator.GenerateId());
-            Assert.AreEqual("A", generator.GenerateId());
-            Assert.AreEqual("1V", generator.GenerateId());
-            Assert.AreEqual("20", generator.GenerateId());
-            Assert.AreEqual("7VVVVVVVVVVVV", generator.GenerateId());
+            Assert.Equal("0", generator.GenerateId());
+            Assert.Equal("1", generator.GenerateId());
+            Assert.Equal("A", generator.GenerateId());
+            Assert.Equal("1V", generator.GenerateId());
+            Assert.Equal("20", generator.GenerateId());
+            Assert.Equal("7VVVVVVVVVVVV", generator.GenerateId());
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyBase32WithLeadingZero()
         {
             var generator = new IdStringGeneratorWrapper(
                 new FakeIdGenerator(0L, 1L, 10L, 63L, 64L, 0x7FFFFFFFFFFFFFFFL),
                 IdStringGeneratorWrapper.Base32LeadingZero);
 
-            Assert.AreEqual("0000000000000", generator.GenerateId());
-            Assert.AreEqual("0000000000001", generator.GenerateId());
-            Assert.AreEqual("000000000000A", generator.GenerateId());
-            Assert.AreEqual("000000000001V", generator.GenerateId());
-            Assert.AreEqual("0000000000020", generator.GenerateId());
-            Assert.AreEqual("7VVVVVVVVVVVV", generator.GenerateId());
+            Assert.Equal("0000000000000", generator.GenerateId());
+            Assert.Equal("0000000000001", generator.GenerateId());
+            Assert.Equal("000000000000A", generator.GenerateId());
+            Assert.Equal("000000000001V", generator.GenerateId());
+            Assert.Equal("0000000000020", generator.GenerateId());
+            Assert.Equal("7VVVVVVVVVVVV", generator.GenerateId());
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyToStringDefaulWithPrefix()
         {
             var generator = new IdStringGeneratorWrapper(new FakeIdGenerator(5416969582936001L), "x");
 
-            Assert.AreEqual("x5416969582936001", generator.GenerateId());
+            Assert.Equal("x5416969582936001", generator.GenerateId());
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyUpperHex()
         {
             var generator = new IdStringGeneratorWrapper(
                 new FakeIdGenerator(0x7f23f22ffcdffff1L),
                 IdStringGeneratorWrapper.UpperHex);
 
-            Assert.AreEqual("7F23F22FFCDFFFF1", generator.GenerateId());
+            Assert.Equal("7F23F22FFCDFFFF1", generator.GenerateId());
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyLoweHex()
         {
             var generator = new IdStringGeneratorWrapper(
                 new FakeIdGenerator(0x7f23f22ffcdfffc1L),
                 IdStringGeneratorWrapper.LowerHex);
 
-            Assert.AreEqual("7f23f22ffcdfffc1", generator.GenerateId());
+            Assert.Equal("7f23f22ffcdfffc1", generator.GenerateId());
         }
 
-        [TestMethod]
+        [Fact]
         public void UniqueDefaultToStringIds()
         {
             IIdGenerator<string> generator
@@ -117,10 +116,10 @@ namespace FlakeGen.Test
 
             var ids = generator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreUnique(ids), "Generated ids needs to be unique");
+            Assert.True(AssertUtil.AreUnique(ids), "Generated ids needs to be unique");
         }
 
-        [TestMethod]
+        [Fact]
         public void UniqueUpperHexIds()
         {
             IIdGenerator<string> generator
@@ -129,10 +128,10 @@ namespace FlakeGen.Test
 
             var ids = generator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreUnique(ids), "Generated ids needs to be unique");
+            Assert.True(AssertUtil.AreUnique(ids), "Generated ids needs to be unique");
         }
 
-        [TestMethod]
+        [Fact]
         public void UniqueLowerHexIds()
         {
             IIdGenerator<string> generator
@@ -141,10 +140,10 @@ namespace FlakeGen.Test
 
             var ids = generator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreUnique(ids), "Generated ids needs to be unique");
+            Assert.True(AssertUtil.AreUnique(ids), "Generated ids needs to be unique");
         }
 
-        [TestMethod]
+        [Fact]
         public void SortedDefaultToStringIds()
         {
             IIdGenerator<string> generator
@@ -152,10 +151,10 @@ namespace FlakeGen.Test
 
             var ids = generator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreSorted(ids), "Generated ids needs to be sorted");
+            Assert.True(AssertUtil.AreSorted(ids), "Generated ids needs to be sorted");
         }
 
-        [TestMethod]
+        [Fact]
         public void SortedUpperHexIds()
         {
             IIdGenerator<string> generator
@@ -164,10 +163,10 @@ namespace FlakeGen.Test
 
             var ids = generator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreSorted(ids), "Generated ids needs to be sorted");
+            Assert.True(AssertUtil.AreSorted(ids), "Generated ids needs to be sorted");
         }
 
-        [TestMethod]
+        [Fact]
         public void SortedLowerHexIds()
         {
             IIdGenerator<string> generator
@@ -176,10 +175,10 @@ namespace FlakeGen.Test
 
             var ids = generator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreSorted(ids), "Generated ids needs to be sorted");
+            Assert.True(AssertUtil.AreSorted(ids), "Generated ids needs to be sorted");
         }
 
-        [TestMethod]
+        [Fact]
         public void UniqueBase64Ids()
         {
             IIdGenerator<string> generator
@@ -188,10 +187,10 @@ namespace FlakeGen.Test
 
             var ids = generator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreUnique(ids), "Generated ids needs to be unique");
+            Assert.True(AssertUtil.AreUnique(ids), "Generated ids needs to be unique");
         }
 
-        [TestMethod]
+        [Fact]
         public void SortedBase64Ids()
         {
             IIdGenerator<string> generator
@@ -200,7 +199,7 @@ namespace FlakeGen.Test
 
             var ids = generator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreSorted(ids), "Generated ids needs to be sorted");
+            Assert.True(AssertUtil.AreSorted(ids), "Generated ids needs to be sorted");
         }
     }
 }

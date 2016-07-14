@@ -66,7 +66,6 @@ namespace InColUn.Auth.GoogleOAuth
                 identity.AddClaim(new Claim(ClaimTypes.Name, name, ClaimValueTypes.String, this.AuthScheme));
             }
 
-
             return identity;
         }
     }

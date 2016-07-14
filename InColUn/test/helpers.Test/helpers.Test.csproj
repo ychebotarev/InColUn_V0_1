@@ -67,12 +67,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Helpers\Helpers.csproj">
-      <Project>{7070d574-6d2d-4a2c-bcde-e7942d1c9830}</Project>
-      <Name>Helpers</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>

@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Dapper": "1.50.1",
+    "InColUn.Helpers": "1.0.0-*",
+    "LoggerFacade": "1.0.0-*",
+    "MetricsFacade": "1.0.0-*",
+    "NETStandard.Library": "1.6.0",
+    "SapientGuardian.MySql.Data": "6.9.811"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  }
+}

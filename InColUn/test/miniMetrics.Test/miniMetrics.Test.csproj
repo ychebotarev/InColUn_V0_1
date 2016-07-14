@@ -69,12 +69,6 @@
     <Compile Include="TestMetricsFullCycle.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\miniMetrics\miniMetrics.csproj">
-      <Project>{e451ef3e-ec82-441e-ab7e-676d0420b2c0}</Project>
-      <Name>miniMetrics</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>

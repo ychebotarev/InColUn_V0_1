@@ -1,15 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
+using Xunit;
 
 namespace FlakeGen.Test
 {
     using System.Diagnostics;
 
-    [TestClass]
     public class IdGuidGeneratorTest
     {
         private const int HowManyIds = 10000;
@@ -34,27 +32,27 @@ namespace FlakeGen.Test
             Console.WriteLine(output);
         }
 
-        [TestMethod]
+        [Fact]
         public void UniqueGuidIds()
         {
             IIdGenerator<Guid> idGenerator = new IdGuidGenerator();
 
             Guid[] ids = idGenerator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreUnique(ids), "All ids needs to be unique");
+            Assert.True(AssertUtil.AreUnique(ids), "All ids needs to be unique");
         }
 
-        [TestMethod]
+        [Fact]
         public void SortableGuidIds()
         {
             IIdGenerator<Guid> idGenerator = new IdGuidGenerator();
 
             Guid[] ids = idGenerator.Take(HowManyIds).ToArray();
 
-            Assert.IsTrue(AssertUtil.AreSorted(ids), "Ids array needs to be ordered");
+            Assert.True(AssertUtil.AreSorted(ids), "Ids array needs to be ordered");
         }
 
-        [TestMethod]
+        [Fact]
         public void DistinctGuidIdsForMultiThreads()
         {
             Thread[] threads = new Thread[HowManyThreads];
@@ -77,18 +75,16 @@ namespace FlakeGen.Test
             {
                 threads[i].Join();
 
-                Assert.IsTrue(AssertUtil.AreUnique(ids[i]), "All ids needs to be unique");
-                Assert.IsTrue(AssertUtil.AreSorted(ids[i]), "Ids array needs to be ordered");
+                Assert.True(AssertUtil.AreUnique(ids[i]), "All ids needs to be unique");
+                Assert.True(AssertUtil.AreSorted(ids[i]), "Ids array needs to be ordered");
 
                 allIds.AddRange(ids[i]);
             }
 
-            Assert.AreEqual(
-                HowManyIds * HowManyThreads, allIds.Distinct().Count(),
-                "All ids needs to be unique");
+            Assert.Equal(HowManyIds * HowManyThreads, allIds.Distinct().Count());
         }
 
-        [TestMethod]
+        [Fact]
         public void IdentiferUsesLowOrderBytesOfInt64()
         {
             long identifier = 0x0123456789abcdef;
@@ -98,12 +94,12 @@ namespace FlakeGen.Test
             Guid id = idGenerator.GenerateId();
             byte[] bytes = id.ToByteArray();
 
-            Assert.AreEqual((byte)0x45, bytes[8 + 0]);
-            Assert.AreEqual((byte)0x67, bytes[8 + 1]);
-            Assert.AreEqual((byte)0x89, bytes[8 + 2]);
-            Assert.AreEqual((byte)0xab, bytes[8 + 3]);
-            Assert.AreEqual((byte)0xcd, bytes[8 + 4]);
-            Assert.AreEqual((byte)0xef, bytes[8 + 5]);
+            Assert.Equal((byte)0x45, bytes[8 + 0]);
+            Assert.Equal((byte)0x67, bytes[8 + 1]);
+            Assert.Equal((byte)0x89, bytes[8 + 2]);
+            Assert.Equal((byte)0xab, bytes[8 + 3]);
+            Assert.Equal((byte)0xcd, bytes[8 + 4]);
+            Assert.Equal((byte)0xef, bytes[8 + 5]);
         }
     }
 }

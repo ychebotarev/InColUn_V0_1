@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LoggerFacade")]
+[assembly: AssemblyProduct("InColUn.Helpers")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -16,4 +16,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ee6e8e02-cd96-4ee0-b5a9-8a8d311a7f63")]
+[assembly: Guid("b50a9397-75e0-41cb-8563-21198e1e62e2")]
