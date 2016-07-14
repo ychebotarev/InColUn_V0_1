@@ -165,7 +165,7 @@ namespace Encryption
             byte[] cipherText;
             byte[] iv;
 
-            using (var aes = new AesManaged
+            using (var aes = new AesCng
             {
                 KeySize = KeyBitSize,
                 BlockSize = BlockBitSize,
@@ -261,7 +261,7 @@ namespace Encryption
                 if (compare != 0)
                     return null;
 
-                using (var aes = new AesManaged
+                using (var aes = new AesCng
                 {
                     KeySize = KeyBitSize,
                     BlockSize = BlockBitSize,

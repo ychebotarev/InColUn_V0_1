@@ -1,16 +1,12 @@
 ﻿using System.Linq;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Xunit;
 
 namespace InColUn.Db.Test
 {
-    [TestClass]
     public class UserBoardTableTest
     {
         MySqlDBContext dbContext;
 
-        [TestInitialize]
         public void TestInitialize()
         {
             var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
@@ -33,7 +29,6 @@ namespace InColUn.Db.Test
             boardsTable.CreateBoard(4, "4");
         }
 
-        [TestCleanup]
         public void TestCleanup()
         {
             var dbService = this.dbContext.GetTableService<UserBoardTableService>();
@@ -43,53 +38,60 @@ namespace InColUn.Db.Test
             dbService.Execute("delete from boards");
         }
 
-        [TestCategory("UserBoard tests"), TestMethod]
+        [Fact]
         public void UserBoardAcceptanceTest()
         {
+            this.TestInitialize();
+
             var userBoardTable = this.dbContext.GetTableService<UserBoardTableService>();
             var result = userBoardTable.CreateUserBoard(1,1, UserBoardRelations.Owner);
-            result.Should().BeTrue();
+            Assert.True(result, "First link creation should work");
 
             result = userBoardTable.CreateUserBoard(2, 1, UserBoardRelations.Owner);
-            result.Should().BeFalse("Should not create new record if board already have an owner.");
+            Assert.False(result, "Should not create new record if board already have an owner.");
+
 
             result = userBoardTable.CreateUserBoard(2, 1, UserBoardRelations.Forked);
-            result.Should().BeTrue("Should be able to create a link");
+            Assert.True(result, "Should be able to create a link with different relation");
 
             result = userBoardTable.CreateUserBoard(2, 1, UserBoardRelations.Contributer);
-            result.Should().BeTrue("Should be able to update link relation");
+            Assert.True(result, "Should be able to update link relation");
 
             result = userBoardTable.CreateUserBoard(2, 1, UserBoardRelations.Owner);
-            result.Should().BeFalse("Should not update relation if board already have an owner.");
+            Assert.False(result, "Should not update to owner relation if board already have a different owner.");
 
             result = userBoardTable.CreateUserBoard(2, 4, UserBoardRelations.Viewer);
-            result.Should().BeFalse("Should not create new link if board doesn't have an owner.");
+            Assert.False(result, "Should not create new link if board doesn't have an owner.");
 
             result = userBoardTable.CreateUserBoard(2, 4, UserBoardRelations.Owner);
-            result.Should().BeTrue("Should create owner link since board doesn't have an owner.");
+            Assert.True(result, "Should create owner link since board doesn't have an owner.");
 
             var userId = userBoardTable.GetBoardOwner(1);
-            userId.Should().Be(1);
+            Assert.Equal(1, userId);
+            
 
             var userBoard = userBoardTable.FindUserBoard(1, 1);
-            userBoard.Should().NotBeNull();
-            userBoard.userid.Should().Be(1);
-            userBoard.boardid.Should().Be(1);
-            userBoard.relation.Should().Be("O");
+            Assert.NotNull(userBoard);
+            Assert.Equal(1, userBoard.userid);
+            Assert.Equal(1, userBoard.boardid);
+            Assert.Equal("O", userBoard.relation);
+
 
             userBoard = userBoardTable.FindUserBoard(2, 1);
-            userBoard.relation.Should().Be("C");
+            Assert.Equal("C", userBoard.relation);
 
             userBoard = userBoardTable.FindUserBoard(2, 5);
-            userBoard.Should().BeNull();
-
+            Assert.Null(userBoard);
+            
             var boards = userBoardTable.GetUserBoards(2);
-            boards.Should().NotBeNull();
+            Assert.NotNull(boards);
 
             var boardsList = boards.ToList();
-            boardsList.Count.Should().Be(2);
-            boardsList.Should().Contain(1);
-            boardsList.Should().Contain(4);
+            Assert.Equal(2, boardsList.Count);
+            Assert.True(boardsList.Contains(1));
+            Assert.True(boardsList.Contains(2));
+
+            this.TestCleanup();
         }
     }
 }

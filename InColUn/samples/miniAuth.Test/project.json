@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "NETStandard.Library": "1.6.0",
     "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
@@ -18,7 +19,8 @@
   },
 
   "frameworks": {
-    "net461": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
       "dependencies": {
         "miniAuth": {
           "target": "project"

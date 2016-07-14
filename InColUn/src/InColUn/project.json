@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "NETStandard.Library": "1.6.0",
     "Dapper": "1.50.0",
     "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
@@ -13,7 +14,6 @@
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "MySql.Data": "6.9.9",
     "Newtonsoft.Json": "9.0.1"
   },
 
@@ -22,9 +22,10 @@
   },
 
   "frameworks": {
-    "net461": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
       "dependencies": {
-        "Helpers": {
+        "InColUn.Helpers": {
           "target": "project"
         },
         "miniAuth": {

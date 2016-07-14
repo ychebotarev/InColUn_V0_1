@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
+using Xunit;
+
 
 namespace InColUn.Db.Test
 {
-    [TestClass]
     public class BoardsTableTest
     {
         MySqlDBContext dbContext;
 
-        [TestInitialize]
         public void TestInitialize()
         {
             var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
@@ -29,7 +27,6 @@ namespace InColUn.Db.Test
             boardsTable.DeleteBoardById(3);
         }
 
-        [TestCleanup]
         public void TestCleanup()
         {
             var userTable = this.dbContext.GetTableService<UserTableService>();
@@ -42,78 +39,86 @@ namespace InColUn.Db.Test
             boardsTable.DeleteBoardById(3);
         }
 
-        [TestMethod]
+        [Fact]
         public void BoardCreateAcceptanceTest()
         {
+            this.TestInitialize();
+
             var boardsTable = this.dbContext.GetTableService<BoardsTableService>();
 
             var result = boardsTable.CreateBoard(1, "title1");
-            result.Should().BeTrue();
+            Assert.True(result);
 
             result = boardsTable.CreateBoard(1, "title2");
-            result.Should().BeFalse("Same id");
+            Assert.False(result, "Should not create board with same id");
 
             result = boardsTable.CreateBoard(2, "title1");
-            result.Should().BeTrue("Same title should be ok");
+            Assert.True(result, "Same title should be ok");
 
-            Action action1 = () => boardsTable.DeleteBoardById(1);
-            action1.ShouldNotThrow("Delete existing board.");
+            var ex = Record.Exception(() => boardsTable.DeleteBoardById(1));
+            Assert.Null(ex);
 
-            
-            action1.ShouldNotThrow("Delete board that doesn't exist.");
+            ex = Record.Exception(() => boardsTable.DeleteBoardById(1));
+            Assert.Null(ex);
 
-            Action action2 = () => boardsTable.DeleteBoardById(2);
-            action1.ShouldNotThrow("Delete existing board.");
+            ex = Record.Exception(() => boardsTable.DeleteBoardById(2));
+            Assert.Null(ex);
+
+            this.TestCleanup();
         }
 
-        [TestMethod]
+        [Fact]
         public void BoardSecionCreateAcceptanceTest()
         {
+            this.TestInitialize();
+
             var boardsTable = this.dbContext.GetTableService<BoardsTableService>();
 
             var result = boardsTable.CreateBoard(1, "1");
-            result.Should().BeTrue();
+            Assert.True(result);
 
             result = boardsTable.CreateSection(2, "1_2", 1, 1);
-            result.Should().BeTrue();
+            Assert.True(result);
 
             result = boardsTable.CreateSection(3, "1_2_3", 2, 1);
-            result.Should().BeTrue();
+            Assert.True(result);
+
 
             var boards = boardsTable.GetBoards(1).ToList();
-            boards.Count.Should().Be(3);
+            Assert.Equal(3, boards.Count);
 
             var first = boards.FirstOrDefault(x => x.id == 1);
-            first.Should().NotBeNull();
-            first.id.Should().Be(1);
-            first.Title.Should().Be("1");
-            first.parentid.Should().Be(0);
-            first.boardid.Should().Be(1);
-            first.status.Should().Be("P");
+            Assert.NotNull(first);
+            Assert.Equal(1, first.id);
+            Assert.Equal("1", first.Title);
+            Assert.Equal(0, first.parentid);
+            Assert.Equal(1, first.boardid);
+            Assert.Equal("P", first.status);
 
             var second = boards.FirstOrDefault(x => x.id == 2);
-            second.Should().NotBeNull();
-            second.id.Should().Be(2);
-            second.Title.Should().Be("1_2");
-            second.parentid.Should().Be(1);
-            second.boardid.Should().Be(1);
-            second.status.Should().Be("P");
+            Assert.NotNull(second);
+            Assert.Equal(2, second.id);
+            Assert.Equal("1_2", second.Title);
+            Assert.Equal(1, second.parentid);
+            Assert.Equal(1, second.boardid);
+            Assert.Equal("P", second.status);
 
             var third = boards.FirstOrDefault(x => x.id == 3);
-            third.Should().NotBeNull();
-            third.id.Should().Be(3);
-            third.Title.Should().Be("1_2_3");
-            third.parentid.Should().Be(2);
-            third.boardid.Should().Be(1);
-            third.status.Should().Be("P");
+            Assert.NotNull(third);
+            Assert.Equal(3, third.id);
+            Assert.Equal("1_2_3", third.Title);
+            Assert.Equal(2, third.parentid);
+            Assert.Equal(1, third.boardid);
+            Assert.Equal("P", third.status);
 
+            
             var board = boardsTable.FindBoardById(3);
-            board.Should().NotBeNull();
-            board.id.Should().Be(3);
-            board.Title.Should().Be("1_2_3");
-            board.parentid.Should().Be(2);
-            board.boardid.Should().Be(1);
-            board.status.Should().Be("P");
+            Assert.NotNull(board);
+            Assert.Equal(3, board.id);
+            Assert.Equal("1_2_3", board.Title);
+            Assert.Equal(2, board.parentid);
+            Assert.Equal(1, board.boardid);
+            Assert.Equal("P", board.status);
         }
     }
 }

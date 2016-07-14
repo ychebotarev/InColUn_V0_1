@@ -1,13 +1,12 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
+using Xunit;
+
 
 namespace helpers.Test
 {
-    [TestClass]
     public class HelpersTest
     {
-        [TestMethod]
+        [Fact]
         public void TestByteArrayCompare()
         {
             byte[] b1 = new byte[5];
@@ -20,19 +19,20 @@ namespace helpers.Test
             }
 
             var result = Helpers.System.ByteArrayCompare(b1, b2);
-            result.Should().Be(true, "Same byte arrays");
+            Assert.True(result);
 
             b1[0] = (byte)(random.Next() % 256);
             b2[0] = (byte)(random.Next() % 256);
 
             result = Helpers.System.ByteArrayCompare(b1, b2);
-            result.Should().Be(false, "First byte is different");
+            Assert.False(result);
+
 
             random.NextBytes(b1);
             random.NextBytes(b2);
 
             result = Helpers.System.ByteArrayCompare(b1, b2);
-            result.Should().Be(false, "Completely different byte arrays");
+            Assert.False(result);
         }
     }
 }
