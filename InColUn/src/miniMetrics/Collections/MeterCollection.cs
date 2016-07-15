@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Timers;
+using System.Threading;
 
 using miniMetrics.Metric;
 using MetricsFacade.Collections;
@@ -16,32 +17,30 @@ namespace miniMetrics.Collections
     public class MeterGroup
     {
         Timer timer;
+        public int Interval { get; private set; }
         public ConcurrentDictionary<string, Meter> meters;
 
         public MeterGroup(int interval)
         {
+            this.Interval = interval;
             this.meters = new ConcurrentDictionary<string, Meter>();
 
-            this.timer = new Timer();
-
-            this.timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            this.timer.Interval = interval;
-            this.timer.Enabled = false;
+            this.timer = new Timer(OnTimedEvent, this, -1, interval);
         }
 
         public void Start()
         {
-            this.timer.Enabled = true;
+            this.timer.Change(0, this.Interval);
         }
 
         public void Stop()
         {
-            this.timer.Enabled = false;
+            this.timer.Change(-1, this.Interval);
         }
 
-        private static void OnTimedEvent(object source, ElapsedEventArgs e)
+        private static void OnTimedEvent(object state)
         {
-            var group = source as MeterGroup;
+            var group = state as MeterGroup;
             if (group != null)
             {
                 group.Tick();

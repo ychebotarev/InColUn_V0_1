@@ -5,7 +5,7 @@ using MetricsFacade.Collections;
 
 namespace miniMetrics.Collections
 {
-    class TimeIntervalCollection : Utils.IHideObjectMembers, ITimeIntervalCollection
+    public class TimeIntervalCollection : Utils.IHideObjectMembers, ITimeIntervalCollection
     {
         public Dictionary<string, TimeInterval> intervals;
 

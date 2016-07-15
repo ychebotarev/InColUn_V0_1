@@ -1,9 +1,10 @@
 {
   "dependencies": {
-    "NETStandard.Library": "1.6.0",
-    "Dapper": "1.50.0",
+    "Microsoft.NETCore.App": {
+      "version": "1.0.0",
+      "type": "platform"
+    },
     "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
-    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
@@ -14,7 +15,8 @@
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "Newtonsoft.Json": "9.0.1"
+    "miniAuth": "1.0.0-*",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0"
   },
 
   "tools": {
@@ -22,28 +24,25 @@
   },
 
   "frameworks": {
-    "netstandard1.6": {
-      "imports": "dnxcore50",
-      "dependencies": {
-        "InColUn.Helpers": {
-          "target": "project"
-        },
-        "miniAuth": {
-          "target": "project"
-        },
-        "miniMetrics": {
-          "target": "project"
-        }
-      }
+    "netcoreapp1.0": {
+      "imports": [
+        "dotnet5.6",
+        "portable-net45+win8"
+      ]
     }
   },
 
   "buildOptions": {
     "emitEntryPoint": true,
-    "allowUnsafe": true,
     "preserveCompilationContext": true
   },
-    
+
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true
+    }
+  },
+
   "publishOptions": {
     "include": [
       "wwwroot",

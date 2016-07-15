@@ -19,3 +19,6 @@ CREATE TABLE IF NOT EXISTS `incolun`.`users` (
 ENGINE = InnoDB;
 
 SELECT * FROM incolun.users;
+SELECT * FROM incolun.boards;
+
+delete from incolun.users

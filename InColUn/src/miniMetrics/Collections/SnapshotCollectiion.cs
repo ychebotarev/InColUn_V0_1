@@ -8,7 +8,7 @@ using MetricsFacade.Collections;
 
 namespace miniMetrics.Collections
 {
-    class SnapshotCollectiion : Utils.IHideObjectMembers, ISnapshotCollectiion
+    public class SnapshotCollectiion : Utils.IHideObjectMembers, ISnapshotCollectiion
     {
         private ConcurrentDictionary<string, ConcurrentBag<Snapshot>> snapshots = new ConcurrentDictionary<string, ConcurrentBag<Snapshot>>();
 

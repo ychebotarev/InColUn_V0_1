@@ -1,103 +1,141 @@
 ﻿using System;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace InColUn.Db.Test
 {
-    public class UserTableTest
+    public class UserTableFixture : IDisposable
     {
-        MySqlDBContext dbContext;
-        UserTableService userTable;
+        public MySqlDBContext dbContext;
+        public UserTableService userTable;
 
-        public void TestInitialize()
+        public UserTableFixture()
         {
             var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
             this.dbContext = new MySqlDBContext(connectionString, null);
             this.userTable = new UserTableService(dbContext);
-
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
         }
 
-        public void TestCleanup()
+        public void Dispose()
         {
-            userTable.DeleteUserById(1);
-            userTable.DeleteUserById(2);
+        }
+    }
+
+    public class UserTableTest : IClassFixture<UserTableFixture>
+    {
+        private readonly ITestOutputHelper output;
+        UserTableFixture fixture;
+
+        public UserTableTest(ITestOutputHelper output, UserTableFixture userTableFixture)
+        {
+            this.fixture = userTableFixture;
+            this.output = output;
         }
 
         [Fact]
         public void UserTableAddLocalUser()
         {
-            var result = userTable.CreateLocalUser(1, "test", "test", "test@test.com");
-            Assert.True(result,"First call");
+            string name = "UserTableAddLocalUser";
+            ulong id = (ulong)name.GetHashCode();
+        
+            var userTable = this.fixture.userTable;
+            //cleanup possible artifacts
+            userTable.DeleteUserById(id);
+            userTable.DeleteUserById(id + 1);
 
-            result = userTable.CreateLocalUser(1, "test", "test", "test@test.com");
-            Assert.False(result,"Same insert paraemters");
+            var result = userTable.CreateLocalUser(id, name, name, name + "@test.com");
+            Assert.True(result, "First call");
 
-            result = userTable.CreateLocalUser(1, "test1", "test1", "test1@test1.com");
-            Assert.False(result,"Same ID");
+            result = userTable.CreateLocalUser(id, name, name , name + "@test.com");
+            Assert.False(result, "Same insert paraemters");
 
-            result = userTable.CreateLocalUser(2, "test", "test1", "test@test.com");
-            Assert.False(result,"Same login string");
+            result = userTable.CreateLocalUser(id, name + "1", name + "1", name + "1@test1.com");
+            Assert.False(result, "Same ID");
 
-            result = userTable.CreateLocalUser(2, "'test2", "'test", "'test2@test.com or '1");
+            result = userTable.CreateLocalUser(id + 1, name + "1" , name + "1", name + "@test.com");
+            Assert.False(result, "Same login string");
+
+            result = userTable.CreateLocalUser(id + 1, "'" + name + "2'", "'" + name + "2'", "'" + name + "@test.com or '1");
             Assert.True(result);
+
+            userTable.DeleteUserById(id);
+            userTable.DeleteUserById(id+1);
         }
 
         [Fact]
         public void UserTableFindUserById()
         {
-            Action action = () => userTable.FindUserById(1);
-            var ex = Record.Exception(() => userTable.FindUserById(1));
+            string name = "UserTableFindUserById";
+            ulong id = (ulong)name.GetHashCode();
+
+            var userTable = this.fixture.userTable;
+
+            Action action = () => userTable.FindUserById(id+1);
+            var ex = Record.Exception(() => this.fixture.userTable.FindUserById(id+1));
             Assert.Null(ex);
-            
-            var result = userTable.CreateLocalUser(1, "test", "test", "test@test.com");
-            Assert.True(result,"First call");
 
-            var user = userTable.FindUserById(1);
+            var result = userTable.CreateLocalUser(id, name, name , name+"@test.com");
+            Assert.True(result, "UserTableFindUserById First call");
+
+            var user = userTable.FindUserById(id);
             Assert.NotNull(user);
-            Assert.Equal(1, user.Id);
-            Assert.Equal("test@test.com", user.login_string);
-            Assert.Equal("test@test.com", user.email);
-            Assert.Equal("test", user.display_name);
+            Assert.Equal(id, user.Id);
+            Assert.Equal(name+"@test.com", user.login_string);
+            Assert.Equal(name + "@test.com", user.email);
+            Assert.Equal(name, user.display_name);
 
-            user = userTable.FindUserById(2);
+            user = userTable.FindUserById(id+1);
             Assert.Null(user);
+
+            userTable.DeleteUserById(id);
         }
 
         [Fact]
         public void UserTableFindUserByName()
         {
-            var result = userTable.CreateLocalUser(1, "test", "test", "test@test.com");
-            Assert.True(result,"First call");
+            string name = "UserTableFindUserByName";
+            ulong id = (ulong)name.GetHashCode();
+            var userTable = this.fixture.userTable;
 
-            var user = userTable.FindUserByLoginString("test@test.com");
+            var result = userTable.CreateLocalUser(id, name, name, name+"@test.com");
+            Assert.True(result, "First call");
+
+            var user = this.fixture.userTable.FindUserByLoginString(name+"@test.com");
             Assert.NotNull(user);
-            Assert.Equal(1, user.Id);
-            Assert.Equal("test@test.com", user.login_string);
-            Assert.Equal("test@test.com", user.email);
-            Assert.Equal("test", user.display_name);
+            Assert.Equal(id, user.Id);
+            Assert.Equal(name+"@test.com", user.login_string);
+            Assert.Equal(name + "@test.com", user.email);
+            Assert.Equal(name, user.display_name);
 
-            user = userTable.FindUserByLoginString("test1@test.com"); ;
+            user = this.fixture.userTable.FindUserByLoginString(name + "1@test.com"); ;
             Assert.Null(user);
 
-            user = userTable.FindUserByLoginString("'test1@test.com or '1");
+            user = this.fixture.userTable.FindUserByLoginString("'" + name + "1@test.com or '1");
             Assert.Null(user);
+
+            userTable.DeleteUserById(id);
         }
 
         [Fact]
         public void UserTableAddExternalUser()
         {
-            var result = userTable.CreateExternalUser(1, "G1", "test", "test@test.com", "G");
-            Assert.True(result,"First call");
+            string name = "UserTableAddExternalUser";
+            ulong id = (ulong)name.GetHashCode();
+            var userTable = this.fixture.userTable;
 
-            result = userTable.CreateExternalUser(1, "G1", "test", "test@test.com", "G");
-            Assert.False(result,"Same insert paraemters");
+            var result = this.fixture.userTable.CreateExternalUser(id, name, "test", "test@test.com", "G");
+            Assert.True(result, "First call");
 
-            result = userTable.CreateExternalUser(1, "G2", "test", "test@test.com", "G");
-            Assert.False(result,"Same ID");
+            result = this.fixture.userTable.CreateExternalUser(id, name, "test", "test@test.com", "G");
+            Assert.False(result, "Same id and name");
 
-            result = userTable.CreateExternalUser(2, "G1", "test", "test@test.com", "G");
-            Assert.False(result,"Same login string");
+            result = this.fixture.userTable.CreateExternalUser(id, name+"1", "test", "test@test.com", "G");
+            Assert.False(result, "Same ID");
+
+            result = this.fixture.userTable.CreateExternalUser(id+1, name, "test", "test@test.com", "G");
+            Assert.False(result, "Same login string");
+
+            userTable.DeleteUserById(id);
         }
     }
 }

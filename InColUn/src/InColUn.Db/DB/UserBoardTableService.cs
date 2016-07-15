@@ -29,7 +29,7 @@ namespace InColUn.Db
 
         private static string[] RelationString = new string[] { "O", "F", "V", "C" };
 
-        public bool CreateUserBoard(long userId, long boardid, UserBoardRelations ubRelation)
+        public bool CreateUserBoard(ulong userId, ulong boardid, UserBoardRelations ubRelation)
         {
             var ownerId = this.GetBoardOwner(boardid);
             if (userId == ownerId) return false;
@@ -52,10 +52,10 @@ namespace InColUn.Db
             });
         }
 
-        public long GetBoardOwner(long boardid)
+        public ulong GetBoardOwner(ulong boardid)
         {
             var selectQuery = string.Format("SELECT * FROM userboards WHERE boardid = {0} and relation = 'O'", boardid);
-            var owners = this.dbContext.GetDbConnection().Query<long>(selectQuery).ToList();
+            var owners = this.dbContext.GetDbConnection().Query<ulong>(selectQuery).ToList();
 
             if (owners.Count == 0) return 0;
 
@@ -67,7 +67,7 @@ namespace InColUn.Db
             return owners.First();
         }
 
-        public void DeleteUserBoard(long userId, long boardId)
+        public void DeleteUserBoard(ulong userId, ulong boardId)
         {
             //if user was an owner - mark board as deleted
             var userBoard = this.FindUserBoard(userId, boardId);
@@ -81,7 +81,7 @@ namespace InColUn.Db
             this.dbContext.GetDbConnection().Execute(deleteQuery);
         }
 
-        public UserBoard FindUserBoard(long userId, long boardId)
+        public UserBoard FindUserBoard(ulong userId, ulong boardId)
         {
             var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from userboards where userid = {0} and boardid = {1}", userId, boardId);
@@ -90,15 +90,15 @@ namespace InColUn.Db
             return userBoard;
         }
 
-        public IEnumerable<long> GetUserBoards(long userId)
+        public IEnumerable<ulong> GetUserBoards(ulong userId)
         {
             var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select boardid from userboards where userid = {0}", userId);
-            var boards = connection.Query<long>(query);
+            var boards = connection.Query<ulong>(query);
             return boards;
         }
 
-        public IEnumerable<long> GetUserBoards(long userId, UserBoardRelations ubRelation)
+        public IEnumerable<long> GetUserBoards(ulong userId, UserBoardRelations ubRelation)
         {
             var relation = RelationString[(int)ubRelation];
             var connection = this.dbContext.GetDbConnection();
@@ -107,7 +107,7 @@ namespace InColUn.Db
             return boards;
         }
 
-        public IEnumerable<long> GetUserOpenedBoards(long userId)
+        public IEnumerable<long> GetUserOpenedBoards(ulong userId)
         {
             var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select boardid from openedboards where userid = {0}", userId);
@@ -115,7 +115,7 @@ namespace InColUn.Db
             return boards;
         }
 
-        public bool OpenBoard(long userId, long boardid)
+        public bool OpenBoard(ulong userId, ulong boardid)
         {
             var insertQuery = "INSERT INTO openboards (userid, boardid)" +
                 " VALUES (@userid,@boardid)";
@@ -127,7 +127,7 @@ namespace InColUn.Db
             });
         }
 
-        public void CloseBoard(long userId, long boardid)
+        public void CloseBoard(ulong userId, ulong boardid)
         {
             var deleteQuery = string.Format("DELETE FROM openboards WHERE userid = {0} and boardid = {1}", userId, boardid);
             this.dbContext.GetDbConnection().Execute(deleteQuery);

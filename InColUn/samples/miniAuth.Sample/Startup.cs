@@ -11,7 +11,7 @@ using InColUn.Auth.FacebookOAuth;
 using InColUn.Auth.GoogleOAuth;
 using Newtonsoft.Json;
 
-namespace testAuth
+namespace miniAuth.Sample
 {
     public class Startup
     {
@@ -52,9 +52,6 @@ namespace testAuth
             fbOptions.ClientSecret = Configuration["facebook:appsecret"];
             fbOptions.CallbackPath = "auth/facebook/callback";
 
-            fbOptions.OnOAuthSuccess = OnExternalLoginSuccess;
-            fbOptions.OnOAuthFailure = OnExternalLoginFailure;
-
             var fbStrategy = new FacebookOAuthStrategy(fbOptions);
 
             authService.AddStrategy(fbStrategy);
@@ -67,9 +64,6 @@ namespace testAuth
             gOptions.ClientId = Configuration["google:clientid"];
             gOptions.ClientSecret = Configuration["google:clientsecret"];
             gOptions.CallbackPath = "auth/google/callback";
-
-            gOptions.OnOAuthSuccess = OnExternalLoginSuccess;
-            gOptions.OnOAuthFailure = OnExternalLoginFailure;
 
             var gStrategy = new GoogleOAuthStrategy(gOptions);
 
@@ -101,6 +95,19 @@ namespace testAuth
             {
                 var authService = app.ApplicationServices.GetService<OAuthService>();
                 var fbStrategy = authService[FacebookDefaults.AuthenticationScheme];
+
+                var options = fbStrategy.GetOptions();
+
+                options.OnOAuthFailure = async (string error, string authSchema) =>
+                {
+                    await OnExternalLoginFailure(app, context, error, authSchema);
+                };
+
+                options.OnOAuthSuccess = async (ClaimsIdentity identity, string authSchema) =>
+                {
+                    await OnExternalLoginSuccess(app, context, identity, authSchema);
+                };
+
                 await fbStrategy.ProcessCallbackAsync(context);
             });
         }
@@ -111,11 +118,29 @@ namespace testAuth
             {
                 var authService = app.ApplicationServices.GetService<OAuthService>();
                 var gStrategy = authService[GoogleDefaults.AuthenticationScheme];
+
+                var options = gStrategy.GetOptions();
+
+                options.OnOAuthFailure = async (string error, string authSchema) =>
+                {
+                    await OnExternalLoginFailure(app, context, error, authSchema);
+                };
+
+                options.OnOAuthSuccess = async (ClaimsIdentity identity, string authSchema) =>
+                {
+                    await OnExternalLoginSuccess(app, context, identity, authSchema);
+                };
+
+
                 await gStrategy.ProcessCallbackAsync(context);
             });
         }
 
-        private async Task OnExternalLoginSuccess(HttpContext context, ClaimsIdentity identity, string authSchema)
+        private async Task OnExternalLoginSuccess(
+            IApplicationBuilder app,
+            HttpContext context,
+            ClaimsIdentity identity,
+            string authSchema)
         {
             context.Response.ContentType = "text/html";
             await context.Response.WriteAsync("<html><body>");
@@ -123,16 +148,20 @@ namespace testAuth
             await context.Response.WriteAsync(authSchema);
             await context.Response.WriteAsync("<br/>");
 
-
             foreach (var claim in identity.Claims)
             {
                 await context.Response.WriteAsync(claim.ToString());
                 await context.Response.WriteAsync("<br/>");
             }
+
             await context.Response.WriteAsync("</body></html>");
         }
 
-        private async Task OnExternalLoginFailure(HttpContext context, string error, string authSchema)
+        private async Task OnExternalLoginFailure(
+            IApplicationBuilder app,
+            HttpContext context,
+            string error,
+            string authSchema)
         {
             await context.Response.WriteAsync(string.Format("External Login for {0} Failed.<br/>Error: ", authSchema));
             await context.Response.WriteAsync(error);

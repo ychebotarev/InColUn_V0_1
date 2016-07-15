@@ -15,7 +15,7 @@ namespace InColUn.Db
         /// </summary>
         /// <param name="Id">User id</param>
         /// <returns>Return user. If user was not found - returns null.</returns>
-        public User FindUserById(long Id)
+        public User FindUserById(ulong Id)
         {
             var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from users where id = {0}", Id);
@@ -44,7 +44,7 @@ namespace InColUn.Db
         /// Delete user from a database by Id
         /// </summary>
         /// <param name="Id">Unique user Id</param>
-        public void DeleteUserById(long Id)
+        public void DeleteUserById(ulong Id)
         {
             var deleteQuery = string.Format("DELETE FROM users WHERE id = {0}",Id);
             this.dbContext.GetDbConnection().Execute(deleteQuery);
@@ -59,7 +59,7 @@ namespace InColUn.Db
         /// <param name="password">User password. Will be converted into hash</param>
         /// <param name="email">Uer email</param>
         /// <returns></returns>
-        public bool CreateLocalUser(long Id, string name, string password, string email)
+        public bool CreateLocalUser(ulong Id, string name, string password, string email)
         {
             var hs = Crypto.GeneratePasswordHashSalt(password);
             var insertQuery = "INSERT INTO users (id, login_string, password_hash, salt, display_name, email, auth_provider, created, status)" +
@@ -85,7 +85,7 @@ namespace InColUn.Db
         /// <param name="email">User email if available. Can be null/empty.</param>
         /// <param name="externalProvider">External provider Id. 'G' - Google, ' F' - Facebook</param>
         /// <returns></returns>
-        public bool CreateExternalUser(long Id, 
+        public bool CreateExternalUser(ulong Id, 
             string loginString, 
             string displayName, 
             string email, 

@@ -1,29 +1,26 @@
-﻿using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using miniMetrics.Collections;
+﻿using miniMetrics.Collections;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Xunit;
 
 namespace miniMetrics.Test.Collections
 {
-    [TestClass]
     public class CounterCollectionTest
     {
-        [TestMethod]
+        [Fact]
         public void CounterCollectionAcceptance()
         {
             var collection = new CounterCollection();
-            collection.Count.Should().Be(0);
-            collection.Register("test");
-            collection.Count.Should().Be(1);
+            Assert.Equal(0, collection.Count);
+            collection.AddCounter("test");
+            Assert.Equal(1, collection.Count);
             //try to register metric with same name
-            collection.Register("test");
-            collection.Count.Should().Be(1);
+            collection.AddCounter("test");
+            Assert.Equal(1, collection.Count);
 
-            collection.Register("test1");
-            collection.Count.Should().Be(2);
+            collection.AddCounter("test1");
+            Assert.Equal(2, collection.Count);
 
             collection["test"].SetValue(10);
             collection["test"].Increment();
@@ -32,16 +29,16 @@ namespace miniMetrics.Test.Collections
             collection["test1"] = 20;
             collection["test1"].Increment();
 
-            collection["test"].Value.Should().Be(11);
-            collection["test1"].Value.Should().Be(21);
+            Assert.Equal(11, collection["test"].Value);
+            Assert.Equal(21, collection["test1"].Value);
         }
         
-        [TestMethod]
+        [Fact]
         public async Task CounterCollectionMultiTask()
         {
             var counters = new CounterCollection();
-            counters.Register("test");
-            counters.Register("test1");
+            counters.AddCounter("test");
+            counters.AddCounter("test1");
 
             var task1 = Task.Run( () => FillCollection(counters));
             var task2 = Task.Run( () => FillCollection(counters));
@@ -50,9 +47,8 @@ namespace miniMetrics.Test.Collections
 
             var res1 = await task1;
             var res2 = await task2;
-
-            (res1 + res2).Should().Be(counters["test"].Value + counters["test1"].Value);
-            counters["test"].Value.Should().Be(counters["test1"].Value);
+            Assert.Equal((res1 + res2), counters["test"].Value + counters["test1"].Value);
+            Assert.Equal(counters["test"].Value, counters["test1"].Value);
         }
 
         private long FillCollection(CounterCollection counters)

@@ -128,6 +128,19 @@ namespace InColUn
             {
                 var authService = app.ApplicationServices.GetService<OAuthService>();
                 var gStrategy = authService[GoogleDefaults.AuthenticationScheme];
+                
+                var options = gStrategy.GetOptions();
+
+                options.OnOAuthFailure = async (string error, string authSchema) =>
+                {
+                    await OnExternalLoginFailure(app, context, error, authSchema);
+                };
+
+                options.OnOAuthSuccess = async (ClaimsIdentity identity, string authSchema) =>
+                {
+                    await OnExternalLoginSuccess(app, context, identity, authSchema);
+                };
+
                 await gStrategy.ProcessCallbackAsync(context);
             });
         }
@@ -181,16 +194,21 @@ namespace InColUn
         {
             loggerFactory.AddConsole();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.Map("/auth/Facebook/Login", FacebookLogin);
             app.Map("/auth/Google/Login", GoogleLogin);
 
             app.Map("/auth/Facebook/callback", FacebookLoginCallback);
             app.Map("/auth/google/callback", GoogleLoginCallback);
+            
+            if(env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+
 
             app.Run(async (context) =>
             {

@@ -25,7 +25,12 @@ CREATE TABLE IF NOT EXISTS `incolun`.`boards`
 )
 ENGINE = InnoDB;
 
-select * from `incolun`.`boards` ;
+select * from incolun.users;
+select * from incolun.boards;
+select * from incolun.userboards;
+
+delete from incolun.users;
+delete from incolun.boards;
 
 /*
 relation:

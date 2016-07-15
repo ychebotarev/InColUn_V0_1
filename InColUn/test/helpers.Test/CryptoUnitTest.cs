@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
+using Xunit;
 
 namespace helpers.Test
 {
-    [TestClass]
     public class CryptoUnitTest
     {
-        [TestMethod]
+        [Fact]
         public void ValidatePasswordTest()
         {
             string password1 = "abcde1";
@@ -22,29 +20,29 @@ namespace helpers.Test
 
             {
                 var result = Helpers.Crypto.ValidatePassword(password1, passwordHash, salt1);
-                result.Should().Be(true, "Simple acceptance");
+                Assert.True(result, "Simple acceptance");
             }
 
             {
                 var passwordHash1 = Helpers.Crypto.GeneratePasswordHash(password1, salt1);
                 var result = Helpers.Crypto.ValidatePassword(password1, passwordHash1, salt1);
-                result.Should().Be(true, "Simple Two consecutive calls should geenrate same hash");
+                Assert.True(result, "Simple Two consecutive calls should geenrate same hash");
             }
 
             {
                 var result = Helpers.Crypto.ValidatePassword(password1, passwordHash, salt2);
-                result.Should().Be(false, "Wrong salt");
+                Assert.False(result, "Wrong salt");
             }
 
             {
                 var result = Helpers.Crypto.ValidatePassword(password2, passwordHash, salt1);
-                result.Should().Be(false, "Same salt, wrong password");
+                Assert.False(result, "Same salt, wrong password");
             }
 
         }
 
 
-        [TestMethod]
+        [Fact]
         public void GeneratePasswordHashTest()
         {
             string password1 = "aaaaa1";
@@ -58,24 +56,24 @@ namespace helpers.Test
             {
                 var challengeHash = Helpers.Crypto.GeneratePasswordHash(password1, salt1);
                 var result = string.CompareOrdinal(originalHash, challengeHash) == 0;
-                result.Should().Be(true, "Simple Two consecutive calls should geenrate same hash");
+                Assert.True(result, "Simple Two consecutive calls should geenrate same hash");
             }
 
             {
                 var challengeHash = Helpers.Crypto.GeneratePasswordHash(password1, salt2);
                 var result = string.CompareOrdinal(originalHash, challengeHash) == 0;
-                result.Should().Be(false, "Different Salt geenrate different hash");
+                Assert.False(result, "Different Salt geenrate different hash");
             }
 
             {
                 var challengeHash = Helpers.Crypto.GeneratePasswordHash(password2, salt1);
                 var result = string.CompareOrdinal(originalHash, challengeHash) == 0;
-                result.Should().Be(false, "Different passwordm same salt generates different hash");
+                Assert.False(result, "Different passwordm same salt generates different hash");
             }
 
             string longPassword = "qwertyuiopasdfghjklzxcvbnm 1234567890.;<>QWERTYUIOP[]ASDFGHJKLZXCVBNM,./;'1234567890-=";
             var passwordHash = Helpers.Crypto.GeneratePasswordHash(longPassword, salt1);
-            passwordHash.Length.Should().BeLessThan(51, "Generated hash is too long");
+            Assert.True(passwordHash.Length <= 50 , "Generated hash is too long");
         }
     }
 }

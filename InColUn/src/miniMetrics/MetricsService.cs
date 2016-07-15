@@ -3,7 +3,7 @@ using MetricsFacade;
 
 namespace miniMetrics
 {
-    class MetricsService : IMetricsService
+    public class MetricsService : IMetricsService
     {
         public static MetricsService gi = new MetricsService("global");
 

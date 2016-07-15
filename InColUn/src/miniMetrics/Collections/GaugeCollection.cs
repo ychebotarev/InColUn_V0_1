@@ -4,7 +4,7 @@ using MetricsFacade.Collections;
 
 namespace miniMetrics.Collections
 {
-    class GaugeCollection : Utils.IHideObjectMembers, IGaugeCollection
+    public class GaugeCollection : Utils.IHideObjectMembers, IGaugeCollection
     {
         private ConcurrentDictionary<string, double> gauges = new ConcurrentDictionary<string, double>();
 

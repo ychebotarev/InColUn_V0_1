@@ -4,7 +4,7 @@ namespace InColUn.Db.Models
 {
     public class User
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public string login_string { get; set; }
         public string password_hash { get; set; }
         public int? salt { get; set; }

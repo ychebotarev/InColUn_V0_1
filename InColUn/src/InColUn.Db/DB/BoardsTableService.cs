@@ -12,7 +12,7 @@ namespace InColUn.Db
         {
         }
 
-        public Board FindBoardById(long Id)
+        public Board FindBoardById(ulong Id)
         {
             var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from boards where id = {0}", Id);
@@ -21,7 +21,7 @@ namespace InColUn.Db
             return board;
         }
 
-        public IEnumerable<Board> GetBoards(long boardid)
+        public IEnumerable<Board> GetBoards(ulong boardid)
         {
             var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from boards where boardid = {0}", boardid);
@@ -29,7 +29,7 @@ namespace InColUn.Db
             return boards;
         }
 
-        public bool CreateBoard(long boardId, string title)
+        public bool CreateBoard(ulong boardId, string title)
         {
             var insertQuery = "INSERT INTO boards (id, title, boardid)" +
                 " VALUES (@id,@title,@id)";
@@ -40,13 +40,13 @@ namespace InColUn.Db
             });
         }
 
-        public void DeleteBoardById(long Id)
+        public void DeleteBoardById(ulong Id)
         {
             var deleteQuery = string.Format("DELETE FROM boards WHERE id = {0}", Id);
             this.dbContext.GetDbConnection().Execute(deleteQuery);
         }
 
-        public bool CreateSection(long id, string title, long? parentId, long? boardId )
+        public bool CreateSection(ulong id, string title, ulong? parentId, ulong? boardId )
         {
             var insertQuery = "INSERT INTO boards (id, title, parentid, boardid)" +
                 " VALUES (@id,@title, @parentid, @boardid)";
@@ -59,7 +59,7 @@ namespace InColUn.Db
             });
         }
 
-        public bool SetBoardStatus(long id, string status)
+        public bool SetBoardStatus(ulong id, string status)
         {
             var updateQuery = "UPDATE boards SET status = @status WHERE id = @id";
 

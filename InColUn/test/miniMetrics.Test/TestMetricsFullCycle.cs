@@ -4,64 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using miniMetrics.Collections;
-using FluentAssertions;
+using Xunit;
 
 namespace miniMetrics.Test
 {
-    /// <summary>
-    /// Summary description for TestMetricsFullCycle
-    /// </summary>
-    [TestClass]
     public class TestMetricsFullCycle
     {
-        public TestMetricsFullCycle()
-        {
-        }
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
-
-        [TestMethod]
-        public async Task MultiTask()
+        [Fact]
+        public async Task MetricsCombinedAcceptanceTest()
         {
             var metrics = new MetricsService("test");
 
@@ -100,11 +51,10 @@ namespace miniMetrics.Test
 
             var count1 = await taskCounters1;
             var count2 = await taskCounters2;
-            (count1 + count2).Should()
-                .Be(metrics.Counters["test.counters.two"].Value + metrics.Counters["test.counters.one"].Value);
+            Assert.Equal(count1 + count2
+                , metrics.Counters["test.counters.two"].Value + metrics.Counters["test.counters.one"].Value);
 
-            metrics.Counters["test.counters.two"].Value.Should()
-                .Be(metrics.Counters["test.counters.one"].Value);
+            Assert.Equal(metrics.Counters["test.counters.two"].Value, metrics.Counters["test.counters.one"].Value);
 
         }
 
