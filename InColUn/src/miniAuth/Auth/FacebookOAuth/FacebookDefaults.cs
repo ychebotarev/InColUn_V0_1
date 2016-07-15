@@ -1,4 +1,4 @@
-﻿namespace InColUn.Auth.FacebookOAuth
+﻿namespace miniAuth.FacebookOAuth
 {
     public static class FacebookDefaults
     {

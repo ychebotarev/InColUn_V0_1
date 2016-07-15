@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace InColUn.Auth.FacebookOAuth
+namespace miniAuth.FacebookOAuth
 {
     public static class FacebookHelper
     {

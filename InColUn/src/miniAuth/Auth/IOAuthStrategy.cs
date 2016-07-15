@@ -2,7 +2,7 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 
-namespace InColUn.Auth
+namespace miniAuth
 {
     public interface IOAuthStrategy
     {

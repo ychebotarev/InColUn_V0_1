@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace InColUn.Auth.FacebookOAuth
+namespace miniAuth.FacebookOAuth
 {
     public class FacebookStrategyOptions : OAuthStrategyOptions
     {

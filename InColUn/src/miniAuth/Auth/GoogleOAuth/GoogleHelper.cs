@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace InColUn.Auth.GoogleOAuth
+namespace miniAuth.GoogleOAuth
 {
     /// <summary>
     /// Contains static methods that allow to extract user's information from a <see cref="JObject"/>

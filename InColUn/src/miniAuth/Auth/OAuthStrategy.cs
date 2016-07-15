@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InColUn.Auth
+namespace miniAuth
 {
     public abstract class OAuthStrategy<TOptions>: IOAuthStrategy where TOptions : OAuthStrategyOptions, new()
     {

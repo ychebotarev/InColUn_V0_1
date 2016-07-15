@@ -1,4 +1,4 @@
-﻿namespace InColUn.Auth
+﻿namespace miniAuth
 {
     public class AuthResponse
     {

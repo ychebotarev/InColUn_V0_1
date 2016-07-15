@@ -6,9 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using InColUn.Auth;
-using InColUn.Auth.FacebookOAuth;
-using InColUn.Auth.GoogleOAuth;
+using miniAuth.FacebookOAuth;
+using miniAuth.GoogleOAuth;
 using Newtonsoft.Json;
 
 namespace miniAuth.Sample

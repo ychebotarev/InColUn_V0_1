@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 using Newtonsoft.Json.Linq;
 
-namespace InColUn.Auth.GoogleOAuth
+namespace miniAuth.GoogleOAuth
 {
     public class GoogleOAuthStrategy : OAuthStrategy<GoogleStrategyOptions>
     {

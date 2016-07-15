@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace InColUn.Auth
+namespace miniAuth
 {
     public class OAuthServiceOptions
     {

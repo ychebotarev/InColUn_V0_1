@@ -1,10 +1,10 @@
-﻿using System;
+﻿/*using System;
 using System.Threading.Tasks;
 using System.Security.Claims;
 
-using InColUn.Auth;
-using InColUn.Auth.FacebookOAuth;
-using InColUn.Auth.GoogleOAuth;
+using miniAuth;
+using miniAuth.FacebookOAuth;
+using miniAuth.GoogleOAuth;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +12,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;*/
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
+using System.Security.Claims;
+using miniAuth.FacebookOAuth;
+using miniAuth.GoogleOAuth;
 using Newtonsoft.Json;
 
 namespace InColUn
@@ -41,7 +53,7 @@ namespace InColUn
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var authService = new OAuthService(new OAuthServiceOptions());
+            var authService = new miniAuth.OAuthService(new miniAuth.OAuthServiceOptions());
 
             this.AddFacebookOAuthStrategy(authService);
             this.AddGoogleOAuthStrategy(authService);
@@ -49,7 +61,7 @@ namespace InColUn
             services.AddSingleton(authService);
         }
 
-        private void AddFacebookOAuthStrategy(OAuthService authService)
+        private void AddFacebookOAuthStrategy(miniAuth.OAuthService authService)
         {
             var fbOptions = FacebookStrategyOptions.CreateDefault();
             fbOptions.ClientId = Configuration["facebook:appid"];
@@ -64,7 +76,7 @@ namespace InColUn
             authService.AddStrategy(fbStrategy);
         }
 
-        private void AddGoogleOAuthStrategy(OAuthService authService)
+        private void AddGoogleOAuthStrategy(miniAuth.OAuthService authService)
         {
             var gOptions = GoogleStrategyOptions.CreateDefault();
             gOptions.ClientId = Configuration["google:clientid"];
@@ -84,7 +96,7 @@ namespace InColUn
         {
             app.Run(async context =>
             {
-                var authService = app.ApplicationServices.GetService<OAuthService>();
+                var authService = app.ApplicationServices.GetService<miniAuth.OAuthService>();
                 
                 await authService.StartAuthentificationAsync(context, FacebookDefaults.AuthenticationScheme);
             });
@@ -94,7 +106,7 @@ namespace InColUn
         {
             app.Run(async context =>
             {
-                var authService = app.ApplicationServices.GetService<OAuthService>();
+                var authService = app.ApplicationServices.GetService<miniAuth.OAuthService>();
                 await authService.StartAuthentificationAsync(context, GoogleDefaults.AuthenticationScheme);
             });
         }
@@ -103,7 +115,7 @@ namespace InColUn
         {
             app.Run(async context =>
             {
-                var authService = app.ApplicationServices.GetService<OAuthService>();
+                var authService = app.ApplicationServices.GetService<miniAuth.OAuthService>();
                 var fbStrategy = authService[FacebookDefaults.AuthenticationScheme];
 
                 var options = fbStrategy.GetOptions();
@@ -126,7 +138,7 @@ namespace InColUn
         {
             app.Run(async context =>
             {
-                var authService = app.ApplicationServices.GetService<OAuthService>();
+                var authService = app.ApplicationServices.GetService<miniAuth.OAuthService>();
                 var gStrategy = authService[GoogleDefaults.AuthenticationScheme];
                 
                 var options = gStrategy.GetOptions();
@@ -178,7 +190,7 @@ namespace InColUn
             await context.Response.WriteAsync(string.Format("External Login for {0} Failed.<br/>Error: ", authSchema));
             await context.Response.WriteAsync(error);
 
-            var authResponse = new AuthResponse
+            var authResponse = new miniAuth.AuthResponse
             {
                 Success = false,
                 Message = "Login failed"

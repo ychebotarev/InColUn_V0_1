@@ -1,4 +1,4 @@
-﻿namespace InColUn.Auth.GoogleOAuth
+﻿namespace miniAuth.GoogleOAuth
 {
     public class GoogleStrategyOptions : OAuthStrategyOptions
     {

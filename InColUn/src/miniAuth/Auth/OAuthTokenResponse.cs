@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace InColUn.Auth
+namespace miniAuth
 {
     public class OAuthTokenResponse
     {

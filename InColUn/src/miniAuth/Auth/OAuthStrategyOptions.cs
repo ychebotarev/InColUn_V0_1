@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Security.Claims;
 
-namespace InColUn.Auth
+namespace miniAuth
 {
     public class OAuthStrategyOptions
     {

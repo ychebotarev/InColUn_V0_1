@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json.Linq;
 
-namespace InColUn.Auth.FacebookOAuth
+namespace miniAuth.FacebookOAuth
 {
     public class FacebookOAuthStrategy : OAuthStrategy<FacebookStrategyOptions>
     {
