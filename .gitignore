@@ -174,7 +174,7 @@ $RECYCLE.BIN/
 .vs/
 
 # artifacts
-InColUn/pingme.txt
+./InColUn/pingme.txt
 
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
