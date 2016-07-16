@@ -66,15 +66,14 @@ namespace miniMetrics.Reports.Formatters
                 , rateUnit));
         }
 
-        public override void ReportTimer(string name, TimeInterval timer, TimeUnit resolution)
+        public override void ReportTimer(string name, TimeInterval interval, TimeUnit resolution)
         {
-            foreach(var tick in timer.ticks)
             {
                 this.callback(string.Format(@"Timer. Name:{0}. Start:{1}. End:{2}. Duration:{3}/n"
                     , name
-                    , TimeUnit.Nanoseconds.Convert(resolution, tick.Item1)
-                    , TimeUnit.Nanoseconds.Convert(resolution, tick.Item2)
-                    , TimeUnit.Nanoseconds.Convert(resolution, tick.Item2 - tick.Item1)));
+                    , TimeUnit.Nanoseconds.Convert(resolution, interval.StartTime)
+                    , TimeUnit.Nanoseconds.Convert(resolution, interval.EndTime)
+                    , TimeUnit.Nanoseconds.Convert(resolution, interval.Duration)));
             }
         }
     }

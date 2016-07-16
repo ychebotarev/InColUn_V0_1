@@ -1,5 +1,6 @@
 ﻿using System;
 using ConcurrencyUtilities;
+using MetricsFacade.Metric;
 
 namespace miniMetrics.Metric
 {
@@ -11,7 +12,7 @@ namespace miniMetrics.Metric
     for current rate to reach target rate for M1_ALPHA
 
     */
-    public class Meter
+    public class Meter : IMeter
     {
         public static readonly double M1_ALPHA = 1.0 - Math.Exp((double)-5 / 60);
         public static readonly double M5_ALPHA = 1.0 - Math.Exp((double)-5 / 60 / 5);
@@ -57,7 +58,8 @@ namespace miniMetrics.Metric
             }
         }
 
-        public double Value => this.currentRate;		
+        public double Value => this.currentRate;
+        public double GetRate() => this.currentRate;
 
         public static Meter createM1Rate() { return new Meter(M1_ALPHA); }
         public static Meter createM5Rate() { return new Meter(M5_ALPHA); }

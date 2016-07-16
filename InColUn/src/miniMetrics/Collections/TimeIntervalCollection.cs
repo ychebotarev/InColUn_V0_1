@@ -1,57 +1,44 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Concurrent;
 
-using miniMetrics.Metric;
 using MetricsFacade.Collections;
+using MetricsFacade.Metric;
 
 namespace miniMetrics.Collections
 {
     public class TimeIntervalCollection : Utils.IHideObjectMembers, ITimeIntervalCollection
     {
-        public Dictionary<string, TimeInterval> intervals;
+        public Dictionary<string, ConcurrentBag<ITimeInterval>> intervals;
 
         public TimeIntervalCollection()
         {
-            this.intervals = new Dictionary<string, TimeInterval>();
+            this.intervals = new Dictionary<string, ConcurrentBag<ITimeInterval>>();
         }
 
-        public void AddInterval(string name)
+        public void AddIntervals(string name)
         {
             if (this.intervals.ContainsKey(name)) return;
 
-            this.intervals[name] = new TimeInterval();
+            this.intervals[name] = new ConcurrentBag<ITimeInterval>();
         }
 
-        public void Start(string name)
+        public void AddInterval(string name, ITimeInterval interval)
         {
-            this[name].Start();
-        }
-
-        public void Stop(string name)
-        {
-            this[name].Stop();
+            this.AddIntervals(name);
+            this.intervals[name].Add(interval);
         }
 
         public void Reset(string name)
         {
-            this[name].Reset();
+            this.intervals[name] = new ConcurrentBag<ITimeInterval>();
         }
 
-        public long GetIntervals(string name)
+        public IEnumerable<ITimeInterval> GetIntervals(string name)
         {
-            return this[name].Duration;
+            return this.intervals[name];
         }
 
-        public long GetIntervalStartTime(string name)
-        {
-            return this[name].StartTime;
-        }
-
-        public long GetIntervalStopTime(string name)
-        {
-            return this[name].Duration;
-        }
-
-        public TimeInterval this[string name]
+        public IEnumerable<ITimeInterval> this[string name]
         {
             get
             {
@@ -60,5 +47,10 @@ namespace miniMetrics.Collections
                 return null;
             }
         }
+
+        public int GetIntervalsCount() { return this.intervals.Count; }
+
+        public int Count => this.intervals.Count;
+
     }
 }

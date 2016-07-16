@@ -2,6 +2,7 @@
 using System.Data.Common;
 
 using LoggerFacade;
+using MetricsFacade;
 
 namespace InColUn.Db
 {
@@ -9,10 +10,12 @@ namespace InColUn.Db
     {
         protected Dictionary<string, ITableService> tableServices;
         protected ILogger logger;
+        protected IMetricsService metricService;
 
-        public BasicDbContext(string connectionString, ILogger logger)
+        public BasicDbContext(string connectionString, ILogger logger, IMetricsService metricService)
         {
             this.logger = logger;
+            this.metricService = metricService;
             this.ConnectionString = connectionString;
             this.tableServices = new Dictionary<string, ITableService>();
         }
@@ -22,6 +25,8 @@ namespace InColUn.Db
         public abstract DbConnection GetDbConnection();
 
         public ILogger Logger => this.logger;
+        public IMetricsService Metrics => this.metricService;
+
         public DbConnection DbConnection => this.GetDbConnection();
 
         public void AddTableService<T>(T service) where T : ITableService

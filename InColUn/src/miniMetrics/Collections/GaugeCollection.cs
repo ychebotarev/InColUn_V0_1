@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using miniMetrics.Metric;
 using MetricsFacade.Collections;
 
 namespace miniMetrics.Collections
@@ -8,7 +7,7 @@ namespace miniMetrics.Collections
     {
         private ConcurrentDictionary<string, double> gauges = new ConcurrentDictionary<string, double>();
 
-        public void Register(string name)
+        public void AddGauge(string name)
         {
             if (this.gauges.ContainsKey(name)) return;
             this.gauges[name] = 0.0;
@@ -16,7 +15,7 @@ namespace miniMetrics.Collections
 
         public void AddGauge(string name, double value)
         {
-            this.Register(name);
+            this.AddGauge(name);
             this.gauges[name] = value;
         }
 
@@ -25,10 +24,15 @@ namespace miniMetrics.Collections
             return this[name];
         }
 
+        public int GetGaugessCount() { return this.gauges.Count; }
+
+        public int Count => this.gauges.Count;
+
+
         public double this[string name]
         {
-            get { this.Register(name); return this.gauges[name]; }
-            set { this.Register(name); this.gauges[name] = value; }
+            get { this.AddGauge(name); return this.gauges[name]; }
+            set { this.AddGauge(name); this.gauges[name] = value; }
         }
     }
 }

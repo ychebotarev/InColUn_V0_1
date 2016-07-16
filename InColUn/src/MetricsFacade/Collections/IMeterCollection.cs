@@ -1,4 +1,6 @@
-﻿namespace MetricsFacade.Collections
+﻿using MetricsFacade.Metric;
+
+namespace MetricsFacade.Collections
 {
     public interface IMeterCollection
     {
@@ -10,5 +12,7 @@
 
         bool Increment(string name);
         bool Increment(string name, long value);
+
+        IMeter this[string name] { get; }
     }
 }

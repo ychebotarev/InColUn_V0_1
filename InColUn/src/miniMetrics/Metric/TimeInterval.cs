@@ -1,39 +1,33 @@
 ﻿using miniMetrics.Utils;
-using System;
-using System.Collections.Concurrent;
+using MetricsFacade.Metric;
 
 namespace miniMetrics.Metric
 {
-    public class TimeInterval : IHideObjectMembers
+    public class TimeInterval : IHideObjectMembers, ITimeInterval
     {
-        public ConcurrentBag<Tuple<long,long>> ticks;
+        public long StartTime { get; set; }
+        public long EndTime { get; set; }
+        public long Duration => this.EndTime - this.StartTime;
 
-        public TimeInterval()
-        {
-            this.ticks = new ConcurrentBag<Tuple<long, long>>();
-        }
+        public long GetStartTime() { return this.StartTime; }
+        public long GetEndTime() { return this.EndTime; }
+        public long GetDuration() { return Duration; }
 
-        public long StartTime { get; private set; }
-        public long StopTime { get; private set; }
-        public long Duration => this.StopTime - this.StartTime;
-          
         public void Start()
         {
             this.StartTime = Clock.Default.Nanoseconds;
-            this.StopTime = 0;
+            this.EndTime = 0;
         } 
 
         public void Stop()
         {
-            this.StopTime = Clock.Default.Nanoseconds;
-            this.ticks.Add(new Tuple<long, long>(this.StartTime, this.StopTime));
+            this.EndTime = Clock.Default.Nanoseconds;
         }
 
         public void Reset()
         {
-            this.StopTime = 0;
+            this.EndTime = 0;
             this.StartTime = 0;
-            this.ticks = new ConcurrentBag<Tuple<long, long>>();
         }
     }
 }

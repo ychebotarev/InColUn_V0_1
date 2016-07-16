@@ -12,7 +12,7 @@ namespace InColUn.Db.Test
         public UserTableFixture()
         {
             var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            this.dbContext = new MySqlDBContext(connectionString, null);
+            this.dbContext = new MySqlDBContext(connectionString, null, null);
             this.userTable = new UserTableService(dbContext);
         }
 

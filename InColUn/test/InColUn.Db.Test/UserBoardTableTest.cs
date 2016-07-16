@@ -11,7 +11,7 @@ namespace InColUn.Db.Test
         public UserBoardTableFixture()
         {
             var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            this.dbContext = new MySqlDBContext(connectionString, null);
+            this.dbContext = new MySqlDBContext(connectionString, null, null);
 
             var userTable = new UserTableService(dbContext);
             var boardsTable = new BoardsTableService(dbContext);
@@ -27,36 +27,6 @@ namespace InColUn.Db.Test
 
         }
     }
-
-    /*public class UserBoardTableTestContext : IDisposable
-    {
-        UserBoardTableFixture fixture;
-
-        public UserBoardTableTestContext(UserBoardTableFixture fixture)
-        {
-            this.fixture = fixture;
-
-            var userTable = this.fixture.dbContext.GetTableService<UserTableService>();
-
-            userTable.CreateLocalUser(1, "test1", "test2", "test1@test.com");
-            userTable.CreateLocalUser(2, "test2", "test2", "test2@test.com");
-
-            var boardsTable = this.fixture.dbContext.GetTableService<BoardsTableService>();
-
-            boardsTable.CreateBoard(1, "1");
-            boardsTable.CreateSection(2, "2", 1, 1);
-            boardsTable.CreateSection(3, "3", 2, 1);
-            boardsTable.CreateBoard(4, "4");
-        }
-        public void Dispose()
-        {
-            var dbService = this.fixture.dbContext.GetTableService<UserBoardTableService>();
-
-            //dbService.Execute("delete from users");
-            dbService.Execute("delete from userboards");
-            dbService.Execute("delete from boards");
-        }
-    }*/
 
     public class UserBoardTableTest : IClassFixture<UserBoardTableFixture>
     {

@@ -26,7 +26,7 @@ namespace miniMetrics.Test.Collections
             collection["test"].Increment();
             collection["test"].Increment();
             collection["test"].Decrement();
-            collection["test1"] = 20;
+            collection["test1"].SetValue(20);
             collection["test1"].Increment();
 
             Assert.Equal(11, collection["test"].Value);

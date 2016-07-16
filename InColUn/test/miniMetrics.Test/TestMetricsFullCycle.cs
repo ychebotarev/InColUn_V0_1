@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using miniMetrics.Collections;
+using miniMetrics.Metric;
+
 using Xunit;
 
 namespace miniMetrics.Test
@@ -25,8 +27,8 @@ namespace miniMetrics.Test
             metrics.Snapshots.AddSnapshot("test.snapshot.one");
             metrics.Snapshots.AddSnapshot("test.snapshot.two");
 
-            metrics.Intervals.AddInterval("test.intervals.one");
-            metrics.Intervals.AddInterval("test.intervals.two");
+            metrics.Intervals.AddIntervals("test.intervals.one");
+            metrics.Intervals.AddIntervals("test.intervals.two");
 
             //fill values
             var taskCounters1 = Task.Run( () => GenerateCounters(metrics, "test.counters.one", "test.counters.two"));
@@ -66,9 +68,11 @@ namespace miniMetrics.Test
             Enumerable.Range(1, (int)cycles).ToList()
                 .ForEach(x =>
                 {
-                    metrics.Intervals[name].Start();
+                    var ti = new TimeInterval();
+                    ti.Start();
                     Thread.Sleep(10);
-                    metrics.Intervals[name].Stop();
+                    ti.Stop();
+                    metrics.Intervals.AddInterval(name, ti);
                 });
             return cycles;
         }
@@ -120,15 +124,17 @@ namespace miniMetrics.Test
             long cycles = 50 + r.Next() % 200;
             if (cycles % 2 == 1) cycles++;
 
-            metrics.Rates.Stop(MeterIntervals.oneMin);
-            metrics.Rates.Stop(MeterIntervals.tenSec);
+            var rates = metrics.Rates as MeterCollection;
+
+            rates.Stop(MeterIntervals.oneMin);
+            rates.Stop(MeterIntervals.tenSec);
 
             Enumerable.Range(1, (int)cycles).ToList()
                 .ForEach(x =>
                 {
                     if (x % 3 == 0)
                     {
-                        metrics.Rates[name1].Increment();
+                        rates[name1].Increment();
                     }
                     else
                     {
@@ -136,8 +142,8 @@ namespace miniMetrics.Test
                     }
                 });
 
-            metrics.Rates[MeterIntervals.oneMin].Tick();
-            metrics.Rates[MeterIntervals.tenSec].Tick();
+            rates[MeterIntervals.oneMin].Tick();
+            rates[MeterIntervals.tenSec].Tick();
 
             Enumerable.Range(1, (int)cycles * 5).ToList()
                 .ForEach(x =>
@@ -153,8 +159,8 @@ namespace miniMetrics.Test
                 });
 
 
-            metrics.Rates[MeterIntervals.oneMin].Tick();
-            metrics.Rates[MeterIntervals.tenSec].Tick();
+            rates[MeterIntervals.oneMin].Tick();
+            rates[MeterIntervals.tenSec].Tick();
 
             return cycles;
         }

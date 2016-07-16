@@ -1,4 +1,6 @@
-﻿namespace MetricsFacade.Collections
+﻿using MetricsFacade.Metric;
+
+namespace MetricsFacade.Collections
 {
     public interface ICounterCollection
     {
@@ -12,5 +14,8 @@
         void Decrement(string name, long step);
 
         long GetValue(string name);
+
+        ICounter this[string name] { get; set; }
+
     }
 }

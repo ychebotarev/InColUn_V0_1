@@ -1,5 +1,6 @@
 ﻿using miniMetrics.Collections;
 using MetricsFacade;
+using MetricsFacade.Collections;
 
 namespace miniMetrics
 {
@@ -7,25 +8,30 @@ namespace miniMetrics
     {
         public static MetricsService gi = new MetricsService("global");
 
-        public CounterCollection Counters;
-        public MeterCollection Rates;
-        public SnapshotCollectiion Snapshots;
-        public TimeIntervalCollection Intervals;
-        public GaugeCollection Gauges;
+        private CounterCollection counterCollection;
+        private MeterCollection meterCollection;
+        private SnapshotCollectiion snapshotCollectiion;
+        private TimeIntervalCollection timeIntervalCollection;
+        private GaugeCollection gaugeCollection;
+
+        private string name;
 
         public MetricsService(string name)
         {
-            this.Counters = new CounterCollection();
-            this.Rates = new MeterCollection();
-            this.Snapshots = new SnapshotCollectiion();
-            this.Intervals = new TimeIntervalCollection();
-            this.Gauges = new GaugeCollection();
+            this.counterCollection = new CounterCollection();
+            this.meterCollection = new MeterCollection();
+            this.snapshotCollectiion = new SnapshotCollectiion();
+            this.timeIntervalCollection = new TimeIntervalCollection();
+            this.gaugeCollection = new GaugeCollection();
 
-            this.CountersCollection = this.Counters;
-
-            this.Name = name;
+            this.name = name;
         }
 
-        //public string Name { get; private set; }
+        public ICounterCollection Counters => this.counterCollection;
+        public IMeterCollection Rates => this.meterCollection;
+        public ISnapshotCollectiion Snapshots => this.snapshotCollectiion;
+        public ITimeIntervalCollection Intervals => this.timeIntervalCollection;
+        public IGaugeCollection Gauges => this.gaugeCollection;
+        public string Name => this.Name;
     }
 }

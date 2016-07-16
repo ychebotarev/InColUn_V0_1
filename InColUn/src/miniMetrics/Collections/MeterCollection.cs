@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
 
 using miniMetrics.Metric;
 using MetricsFacade.Collections;
+using MetricsFacade.Metric;
 
 namespace miniMetrics.Collections
 {
@@ -94,7 +94,7 @@ namespace miniMetrics.Collections
             return this[name].Value;
         }
 
-        public Meter this[string name]
+        public IMeter this[string name]
         {
             get
             {

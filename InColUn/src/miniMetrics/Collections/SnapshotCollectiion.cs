@@ -27,5 +27,9 @@ namespace miniMetrics.Collections
         {
             return this.snapshots[name].ToArray().Select(s => new Tuple<DateTime, double>(s.Date, s.Value));
         }
+
+        public int GetSnapshotCount() { return this.snapshots.Count; }
+
+        public int Count => this.snapshots.Count;
     }
 }

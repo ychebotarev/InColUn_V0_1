@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MetricsFacade.Metric;
 
 namespace miniMetrics.Metric
 {
-    class Snapshot: Utils.IHideObjectMembers
+    class Snapshot : Utils.IHideObjectMembers, ISnapshot
     {
         public double Value { get; private set; }
         public DateTime Date { get; private set; }
@@ -15,5 +12,8 @@ namespace miniMetrics.Metric
             this.Value = value;
             this.Date = DateTime.Now;
         }
+
+        public double GetValue() => this.Value;
+        public DateTime GetDate() => this.Date;
     }
 }

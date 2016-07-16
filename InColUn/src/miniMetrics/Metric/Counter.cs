@@ -1,8 +1,9 @@
 ﻿using ConcurrencyUtilities;
+using MetricsFacade.Metric;
 
 namespace miniMetrics.Metric
 {
-    public class Counter: Utils.IHideObjectMembers
+    public class Counter: Utils.IHideObjectMembers, ICounter
     {
         private AtomicLong _value;
 
@@ -15,6 +16,7 @@ namespace miniMetrics.Metric
         public void Decrement() { this._value.Decrement(); }
         public void Decrement(long step) { this._value.Decrement(step);  }
         public void SetValue(long value) { this._value.SetValue(value); }
+        public long GetValue() { return this._value.GetValue(); }
 
         public long Value => this._value.GetValue();
 

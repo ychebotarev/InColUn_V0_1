@@ -1,12 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using miniMetrics.Metric;
 using MetricsFacade.Collections;
+using MetricsFacade.Metric;
 
 namespace miniMetrics.Collections
 {
     public class CounterCollection : Utils.IHideObjectMembers, ICounterCollection
     {
-        public ConcurrentDictionary<string, Counter> counters = new ConcurrentDictionary<string, Counter>();
+        public ConcurrentDictionary<string, ICounter> counters = new ConcurrentDictionary<string, ICounter>();
 
         public void AddCounter(string name)
         {
@@ -34,7 +35,7 @@ namespace miniMetrics.Collections
             return this[name].Value;
         }
 
-        public Counter this[string name]
+        public ICounter this[string name]
         {
             get { return this.counters[name]; }
             set { this.counters[name] = value; }

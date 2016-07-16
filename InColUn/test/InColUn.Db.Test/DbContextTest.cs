@@ -7,7 +7,7 @@ namespace InColUn.Db.Test
         [Fact]
         public void DbContextAddServiceTest()
         {
-            var dbContext = new MySqlDBContext("none", null);
+            var dbContext = new MySqlDBContext("none", null, null);
 
             dbContext.AddTableService(new UserTableService(dbContext));
             var userTable = dbContext.GetTableService<UserTableService>();
