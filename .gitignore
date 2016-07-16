@@ -137,27 +137,15 @@ Backup*/
 UpgradeLog*.XML
 UpgradeLog*.htm
 
-# vim
 *.txt~
 *.swp
 *.swo
  
-# svn
-.svn
-
-# Remainings from resolvings conflicts in Source Control
-*.orig
-
 # SQL Server files
 **/App_Data/*.mdf
 **/App_Data/*.ldf
 **/App_Data/*.sdf
 
-
-#LightSwitch generated files
-GeneratedArtifacts/
-_Pvt_Extensions/
-ModelManifest.xml
 
 # =========================
 # Windows detritus
@@ -184,6 +172,9 @@ $RECYCLE.BIN/
 
 # Visual Studio temp something
 .vs/
+
+# artifacts
+InColUn/pingme.txt
 
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
