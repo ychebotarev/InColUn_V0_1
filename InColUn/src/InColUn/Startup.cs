@@ -1,20 +1,4 @@
-﻿/*using System;
-using System.Threading.Tasks;
-using System.Security.Claims;
-
-using miniAuth;
-using miniAuth.FacebookOAuth;
-using miniAuth.GoogleOAuth;
-
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;*/
-
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +23,8 @@ namespace InColUn
 
             if (env.IsEnvironment("Development"))
             {
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
+                // This will push telemetry data through Application Insights pipeline faster, 
+                //allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: true);
             }
 
@@ -49,8 +34,6 @@ namespace InColUn
 
         public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             var authService = new miniAuth.OAuthService(new miniAuth.OAuthServiceOptions());
@@ -59,6 +42,7 @@ namespace InColUn
             this.AddGoogleOAuthStrategy(authService);
 
             services.AddSingleton(authService);
+            services.AddMvc();
         }
 
         private void AddFacebookOAuthStrategy(miniAuth.OAuthService authService)
@@ -67,9 +51,6 @@ namespace InColUn
             fbOptions.ClientId = Configuration["facebook:appid"];
             fbOptions.ClientSecret = Configuration["facebook:appsecret"];
             fbOptions.CallbackPath = "auth/facebook/callback";
-
-            //fbOptions.OnOAuthSuccess = OnExternalLoginSuccess;
-            //fbOptions.OnOAuthFailure = OnExternalLoginFailure;
 
             var fbStrategy = new FacebookOAuthStrategy(fbOptions);
 
@@ -83,13 +64,9 @@ namespace InColUn
             gOptions.ClientSecret = Configuration["google:clientsecret"];
             gOptions.CallbackPath = "auth/google/callback";
 
-            //gOptions.OnOAuthSuccess = OnExternalLoginSuccess;
-            //gOptions.OnOAuthFailure = OnExternalLoginFailure;
-
             var gStrategy = new GoogleOAuthStrategy(gOptions);
 
             authService.AddStrategy(gStrategy);
-
         }
 
         private void FacebookLogin(IApplicationBuilder app)
@@ -221,15 +198,23 @@ namespace InColUn
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseStaticFiles();
 
-            app.Run(async (context) =>
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            /*app.Run(async (context) =>
             {
                 context.Response.ContentType = "text/html";
                 await context.Response.WriteAsync("<html><body>");
                 await context.Response.WriteAsync("<a href=\"/auth/Facebook/Login\">FaceBookLogin</a><br>");
                 await context.Response.WriteAsync("<a href=\"/auth/Google/Login\">GoogleLogin</a>");
                 await context.Response.WriteAsync("</body></html>");
-            });
+            });*/
         }
     }
 }
