@@ -206,6 +206,8 @@ namespace InColUn
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+		
+//test		
 
             /*app.Run(async (context) =>
             {
