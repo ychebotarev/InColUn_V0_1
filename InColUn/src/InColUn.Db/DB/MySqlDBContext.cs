@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Data;
 using MySql.Data.MySqlClient;
 
 using LoggerFacade;
@@ -14,7 +15,7 @@ namespace InColUn.Db
         {
         }
 
-        public override DbConnection GetDbConnection()
+        public override IDbConnection GetDbConnection()
         {
             return new MySqlConnection(this.ConnectionString);
         }

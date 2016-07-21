@@ -1,6 +1,5 @@
 ﻿using Helpers;
 using InColUn.Db.Models;
-using Dapper;
 
 namespace InColUn.Db
 {
@@ -15,13 +14,10 @@ namespace InColUn.Db
         /// </summary>
         /// <param name="Id">User id</param>
         /// <returns>Return user. If user was not found - returns null.</returns>
-        public User FindUserById(ulong Id)
+        public User FindUserById(long Id)
         {
-            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from users where id = {0}", Id);
-            var user = connection.QuerySingleOrDefault<User>(query);
-
-            return user;
+            return this.QuerySingleOrDefault<User>(query);
         }
 
         /// <summary>
@@ -32,22 +28,19 @@ namespace InColUn.Db
         /// <returns>Return user. If user was not found - returns null.</returns>
         public User FindUserByLoginString(string loginString)
         {
-            var connection = this.dbContext.GetDbConnection();
             //var query = string.Format("select * from users where login_string = '{0}'", loginString);
-            var user = connection.QuerySingleOrDefault<User>
+            return this.QuerySingleOrDefault<User>
                 ("select * from users where login_string = @login_string", new { login_string  = loginString });
-
-            return user;
         }
 
         /// <summary>
         /// Delete user from a database by Id
         /// </summary>
         /// <param name="Id">Unique user Id</param>
-        public void DeleteUserById(ulong Id)
+        public void DeleteUserById(long Id)
         {
             var deleteQuery = string.Format("DELETE FROM users WHERE id = {0}",Id);
-            this.dbContext.GetDbConnection().Execute(deleteQuery);
+            this.Execute(deleteQuery);
         }
 
         /// <summary>
@@ -59,13 +52,13 @@ namespace InColUn.Db
         /// <param name="password">User password. Will be converted into hash</param>
         /// <param name="email">Uer email</param>
         /// <returns></returns>
-        public bool CreateLocalUser(ulong Id, string name, string password, string email)
+        public bool CreateLocalUser(long Id, string name, string password, string email)
         {
             var hs = Crypto.GeneratePasswordHashSalt(password);
-            var insertQuery = "INSERT INTO users (id, login_string, password_hash, salt, display_name, email, auth_provider, created, status)" +
-                " VALUES (@id,@ls, @ps,@salt, @name, @email,'L',NOW(),'N')";
+            var insertQuery = "INSERT INTO users (id, login_string, password_hash, salt, display_name, email, auth_provider)" +
+                " VALUES (@id,@ls, @ps,@salt, @name, @email,'L')";
 
-            return this.ExecuteInsert(insertQuery, new
+            return this.ExecuteQuery(insertQuery, new
             {
                 id = Id,
                 ls = email,
@@ -85,16 +78,16 @@ namespace InColUn.Db
         /// <param name="email">User email if available. Can be null/empty.</param>
         /// <param name="externalProvider">External provider Id. 'G' - Google, ' F' - Facebook</param>
         /// <returns></returns>
-        public bool CreateExternalUser(ulong Id, 
+        public bool CreateExternalUser(long Id, 
             string loginString, 
             string displayName, 
             string email, 
             string externalProvider)
         {
-            var insertQuery = "INSERT INTO users (id, login_string, display_name, email, auth_provider, created, status)" +
-                " VALUES (@id, @ls, @name, @email, @provider, NOW(),'N')";
+            var insertQuery = "INSERT INTO users (id, login_string, display_name, email, auth_provider)" +
+                " VALUES (@id, @ls, @name, @email, @provider)";
 
-            return this.ExecuteInsert(insertQuery, new
+            return this.ExecuteQuery(insertQuery, new
             {
                 id = Id,
                 ls = loginString,

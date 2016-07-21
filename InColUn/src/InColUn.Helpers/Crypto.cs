@@ -17,7 +17,7 @@ namespace Helpers
 
         public static Tuple<string, long> GeneratePasswordHashSalt(string password)
         {
-            long salt = Crypto.random.Next();
+            int salt = Crypto.random.Next();
 
             return new Tuple<string, long>(GeneratePasswordHash(password, salt), salt);
         }

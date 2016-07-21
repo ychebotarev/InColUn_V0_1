@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Helpers;
 using InColUn.Db.Models;
-using Dapper;
 
 namespace InColUn.Db
 {
@@ -29,7 +27,7 @@ namespace InColUn.Db
 
         private static string[] RelationString = new string[] { "O", "F", "V", "C" };
 
-        public bool CreateUserBoard(ulong userId, ulong boardid, UserBoardRelations ubRelation)
+        public bool CreateUserBoard(long userId, long boardid, UserBoardRelations ubRelation)
         {
             var ownerId = this.GetBoardOwner(boardid);
             if (userId == ownerId) return false;
@@ -39,12 +37,17 @@ namespace InColUn.Db
 
             var relation = RelationString[(int)ubRelation];
 
-            var insertQuery = "INSERT INTO userboards (userid, boardid, relation)" +
-                " VALUES (@userid,@boardid, @relation)" +
-                " ON DUPLICATE KEY UPDATE" +
-                " relation = @relation";
+            string mergeQuery =
+@"MERGE userboards 
+USING (VALUES (@userid,@boardid, @relation) ) AS source(userid, boardid, relation) 
+ON
+   userboards.userid = source.userid AND userboards.boardid = source.boardid
+WHEN MATCHED THEN
+   UPDATE SET relation = source.relation, timestamp = GETDATE()
+WHEN NOT MATCHED THEN
+   INSERT(userid, boardid, relation) VALUES(source.userid, source.boardid, source.relation);";
 
-            return this.ExecuteInsert(insertQuery, new
+            return this.ExecuteQuery(mergeQuery, new
             {
                 userid = userId,
                 boardid = boardid,
@@ -52,85 +55,81 @@ namespace InColUn.Db
             });
         }
 
-        public ulong GetBoardOwner(ulong boardid)
+        public long GetBoardOwner(long boardid)
         {
             var selectQuery = string.Format("SELECT * FROM userboards WHERE boardid = {0} and relation = 'O'", boardid);
-            var owners = this.dbContext.GetDbConnection().Query<ulong>(selectQuery).ToList();
 
-            if (owners.Count == 0) return 0;
+            var owners = this.Query<long>(selectQuery);
 
-            if(owners.Count != 1)
+            if (owners == null) return 0;
+
+            var ownersList = owners.ToList();
+
+            if (ownersList.Count == 0) return 0;
+
+            if(ownersList.Count != 1)
             {
                 throw new ArgumentOutOfRangeException(selectQuery);
             }
 
-            return owners.First();
+            return ownersList.First();
         }
 
-        public void DeleteUserBoard(ulong userId, ulong boardId)
+        public void DeleteUserBoard(long userId, long boardId)
         {
             //if user was an owner - mark board as deleted
             var userBoard = this.FindUserBoard(userId, boardId);
             if(userBoard != null && userBoard.relation == "O")
             {
-                var boardsService = this.dbContext.GetTableService<BoardsTableService>();
+                var boardsService = this.GetContext().GetTableService<BoardsTableService>();
                 boardsService.SetBoardStatus(boardId, "D");
             }
 
             var deleteQuery = string.Format("DELETE FROM userboards WHERE userid = {0} and boardid = {1}", userId, boardId);
-            this.dbContext.GetDbConnection().Execute(deleteQuery);
+            this.Execute(deleteQuery);
         }
 
-        public UserBoard FindUserBoard(ulong userId, ulong boardId)
+        public UserBoard FindUserBoard(long userId, long boardId)
         {
-            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from userboards where userid = {0} and boardid = {1}", userId, boardId);
-            var userBoard = connection.QuerySingleOrDefault<UserBoard>(query);
-
-            return userBoard;
+            return this.QuerySingleOrDefault<UserBoard>(query);
         }
 
-        public IEnumerable<ulong> GetUserBoards(ulong userId)
+        public IEnumerable<long> GetUserBoards(long userId)
         {
-            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select boardid from userboards where userid = {0}", userId);
-            var boards = connection.Query<ulong>(query);
-            return boards;
+            return this.Query<long>(query);
         }
 
-        public IEnumerable<long> GetUserBoards(ulong userId, UserBoardRelations ubRelation)
+        public IEnumerable<long> GetUserBoards(long userId, UserBoardRelations ubRelation)
         {
             var relation = RelationString[(int)ubRelation];
-            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select boardid from userboards where userid = {0} and relation = '{1}'", userId, relation);
-            var boards = connection.Query<long>(query);
-            return boards;
+            return this.Query<long>(query);
         }
 
-        public IEnumerable<long> GetUserOpenedBoards(ulong userId)
+        public IEnumerable<long> GetUserOpenedBoards(long userId)
         {
-            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select boardid from openedboards where userid = {0}", userId);
-            var boards = connection.Query<long>(query);
-            return boards;
+            return this.Query<long>(query);
         }
 
-        public bool OpenBoard(ulong userId, ulong boardid)
+        public bool OpenBoard(long userId, long boardid)
         {
             var insertQuery = "INSERT INTO openboards (userid, boardid)" +
                 " VALUES (@userid,@boardid)";
 
-            return this.ExecuteInsert(insertQuery, new
+            return this.ExecuteQuery(insertQuery, new
             {
                 userid = userId,
                 boardid = boardid
             });
         }
 
-        public void CloseBoard(ulong userId, ulong boardid)
+        public void CloseBoard(long userId, long boardid)
         {
             var deleteQuery = string.Format("DELETE FROM openboards WHERE userid = {0} and boardid = {1}", userId, boardid);
-            this.dbContext.GetDbConnection().Execute(deleteQuery);
+            this.Execute(deleteQuery);
         }
     }
 }

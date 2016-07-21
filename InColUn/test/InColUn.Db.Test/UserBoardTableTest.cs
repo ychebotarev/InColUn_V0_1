@@ -6,12 +6,12 @@ namespace InColUn.Db.Test
 {
     public class UserBoardTableFixture : IDisposable
     {
-        public MySqlDBContext dbContext;
+        public MSSqlDbContext dbContext;
 
         public UserBoardTableFixture()
         {
-            var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            this.dbContext = new MySqlDBContext(connectionString, null, null);
+            var connectionString = @"Server=localhost\SQLEXPRESS;Database=InColUn;User ID=UserTest;Password=1qaz2wsx;Connection Timeout=30;";
+            this.dbContext = new MSSqlDbContext(connectionString, null, null);
 
             var userTable = new UserTableService(dbContext);
             var boardsTable = new BoardsTableService(dbContext);
@@ -38,10 +38,10 @@ namespace InColUn.Db.Test
         }
 
         [Fact]
-        public void UserBoardAcceptanceTest()
+        public void AcceptanceTest()
         {
-            string name = "UserTableAddLocalUser";
-            ulong id = (ulong)name.GetHashCode();
+            string name = "UserBoardTableTest_AcceptanceTest";
+            long id = name.GetHashCode();
 
             var userTable = this.fixture.dbContext.GetTableService<UserTableService>();
             var boardsTable = this.fixture.dbContext.GetTableService<BoardsTableService>();
@@ -84,12 +84,12 @@ namespace InColUn.Db.Test
             Assert.True(result, "Should create owner link since board doesn't have an owner.");
 
             var userId = userBoardTable.GetBoardOwner(id + 1);
-            Assert.Equal(id + 1u, userId);
+            Assert.Equal(id + 1, userId);
 
             var userBoard = userBoardTable.FindUserBoard(id + 1, id + 1);
             Assert.NotNull(userBoard);
-            Assert.Equal(id + 1u, userBoard.userid);
-            Assert.Equal(id + 1u, userBoard.boardid);
+            Assert.Equal(id + 1, userBoard.userid);
+            Assert.Equal(id + 1, userBoard.boardid);
             Assert.Equal("O", userBoard.relation);
 
             userBoard = userBoardTable.FindUserBoard(id + 2, id + 1);
@@ -103,8 +103,8 @@ namespace InColUn.Db.Test
 
             var boardsList = boards.ToList();
             Assert.Equal(2, boardsList.Count);
-            Assert.True(boardsList.Contains(id + 1u));
-            Assert.True(boardsList.Contains(id + 4u));
+            Assert.True(boardsList.Contains(id + 1));
+            Assert.True(boardsList.Contains(id + 4));
 
             //Cleanup
             userTable.DeleteUserById(id + 1);

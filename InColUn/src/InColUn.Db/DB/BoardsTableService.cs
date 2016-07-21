@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Helpers;
+﻿using System.Collections.Generic;
 using InColUn.Db.Models;
-using Dapper;
 
 namespace InColUn.Db
 {
@@ -12,45 +9,40 @@ namespace InColUn.Db
         {
         }
 
-        public Board FindBoardById(ulong Id)
+        public Board FindBoardById(long Id)
         {
-            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from boards where id = {0}", Id);
-            var board = connection.QuerySingleOrDefault<Board>(query);
-
-            return board;
+            return this.QuerySingleOrDefault<Board>(query);
         }
 
-        public IEnumerable<Board> GetBoards(ulong boardid)
+        public IEnumerable<Board> GetBoards(long boardid)
         {
-            var connection = this.dbContext.GetDbConnection();
             var query = string.Format("select * from boards where boardid = {0}", boardid);
-            var boards = connection.Query<Board>(query);
-            return boards;
+            return this.Query<Board>(query);
         }
 
-        public bool CreateBoard(ulong boardId, string title)
+        public bool CreateBoard(long boardId, string title)
         {
             var insertQuery = "INSERT INTO boards (id, title, boardid)" +
                 " VALUES (@id,@title,@id)";
-            return this.ExecuteInsert(insertQuery, new
+            return this.ExecuteQuery(insertQuery, new
             {
                 id = boardId,
                 title = title
             });
         }
 
-        public void DeleteBoardById(ulong Id)
+        public void DeleteBoardById(long Id)
         {
             var deleteQuery = string.Format("DELETE FROM boards WHERE id = {0}", Id);
-            this.dbContext.GetDbConnection().Execute(deleteQuery);
+            this.Execute(deleteQuery);
         }
 
-        public bool CreateSection(ulong id, string title, ulong? parentId, ulong? boardId )
+        public bool CreateSection(long id, string title, long? parentId, long? boardId )
         {
             var insertQuery = "INSERT INTO boards (id, title, parentid, boardid)" +
                 " VALUES (@id,@title, @parentid, @boardid)";
-            return this.ExecuteInsert(insertQuery, new
+            return this.ExecuteQuery(insertQuery, new
             {
                 id=id,
                 parentId=parentId,
@@ -59,11 +51,11 @@ namespace InColUn.Db
             });
         }
 
-        public bool SetBoardStatus(ulong id, string status)
+        public bool SetBoardStatus(long id, string status)
         {
             var updateQuery = "UPDATE boards SET status = @status WHERE id = @id";
 
-            return this.ExecuteUpdate(updateQuery, new
+            return this.ExecuteQuery(updateQuery, new
             {
                 id = id,
                 status = status

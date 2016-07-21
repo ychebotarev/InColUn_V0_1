@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 using LoggerFacade;
 using MetricsFacade;
  
@@ -6,8 +6,8 @@ namespace InColUn.Db
 {
     public interface IDbContext
     {
-        DbConnection GetDbConnection();
-        DbConnection DbConnection { get; }
+        IDbConnection GetDbConnection();
+        IDbConnection DbConnection { get; }
         ILogger Logger { get; }
         IMetricsService Metrics { get; }
 

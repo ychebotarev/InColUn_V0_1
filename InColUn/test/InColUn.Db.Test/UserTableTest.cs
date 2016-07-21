@@ -6,13 +6,13 @@ namespace InColUn.Db.Test
 {
     public class UserTableFixture : IDisposable
     {
-        public MySqlDBContext dbContext;
+        public MSSqlDbContext dbContext;
         public UserTableService userTable;
 
         public UserTableFixture()
         {
-            var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            this.dbContext = new MySqlDBContext(connectionString, null, null);
+            var connectionString = @"Server=localhost\SQLEXPRESS;Database=InColUn;User ID=UserTest;Password=1qaz2wsx;Connection Timeout=30;";
+            this.dbContext = new MSSqlDbContext(connectionString, null, null);
             this.userTable = new UserTableService(dbContext);
         }
 
@@ -33,10 +33,10 @@ namespace InColUn.Db.Test
         }
 
         [Fact]
-        public void UserTableAddLocalUser()
+        public void AddLocalUser()
         {
             string name = "UserTableAddLocalUser";
-            ulong id = (ulong)name.GetHashCode();
+            long id = (long)name.GetHashCode();
         
             var userTable = this.fixture.userTable;
             //cleanup possible artifacts
@@ -63,10 +63,10 @@ namespace InColUn.Db.Test
         }
 
         [Fact]
-        public void UserTableFindUserById()
+        public void FindUserById()
         {
             string name = "UserTableFindUserById";
-            ulong id = (ulong)name.GetHashCode();
+            long id = name.GetHashCode();
 
             var userTable = this.fixture.userTable;
 
@@ -91,10 +91,10 @@ namespace InColUn.Db.Test
         }
 
         [Fact]
-        public void UserTableFindUserByName()
+        public void FindUserByName()
         {
             string name = "UserTableFindUserByName";
-            ulong id = (ulong)name.GetHashCode();
+            long id = name.GetHashCode();
             var userTable = this.fixture.userTable;
 
             var result = userTable.CreateLocalUser(id, name, name, name+"@test.com");
@@ -117,10 +117,10 @@ namespace InColUn.Db.Test
         }
 
         [Fact]
-        public void UserTableAddExternalUser()
+        public void AddExternalUser()
         {
             string name = "UserTableAddExternalUser";
-            ulong id = (ulong)name.GetHashCode();
+            long id = name.GetHashCode();
             var userTable = this.fixture.userTable;
 
             var result = this.fixture.userTable.CreateExternalUser(id, name, "test", "test@test.com", "G");

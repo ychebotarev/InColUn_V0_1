@@ -7,13 +7,13 @@ namespace InColUn.Db.Test
 {
     public class BoardsTableFixture : IDisposable
     {
-        public MySqlDBContext dbContext;
+        public MSSqlDbContext dbContext;
         public UserTableService userTable;
 
         public BoardsTableFixture()
         {
-            var connectionString = "server = localhost; user = root; database = incolun; port = 3306; password = !qAzXsW2";
-            this.dbContext = new MySqlDBContext(connectionString, null, null);
+            var connectionString = @"Server=localhost\SQLEXPRESS;Database=InColUn;User ID=UserTest;Password=1qaz2wsx;Connection Timeout=30;";
+            this.dbContext = new MSSqlDbContext(connectionString, null, null);
 
             var userTable = new UserTableService(dbContext);
             var boardsTable = new BoardsTableService(dbContext);
@@ -45,7 +45,7 @@ namespace InColUn.Db.Test
         {
             var boardsTable = this.fixture.dbContext.GetTableService<BoardsTableService>();
             string name = "BoardCreateAcceptanceTest";
-            ulong id = (ulong)name.GetHashCode();
+            long id = name.GetHashCode();
 
             //cleanup artefacts
             boardsTable.DeleteBoardById(id + 1);
@@ -74,7 +74,7 @@ namespace InColUn.Db.Test
         public void BoardSecionCreateAcceptanceTest()
         {
             string name = "BoardSecionCreateAcceptanceTest";
-            ulong id = (ulong)name.GetHashCode();
+            long id = name.GetHashCode();
             var boardsTable = this.fixture.dbContext.GetTableService<BoardsTableService>();
 
             //cleanup artefacts

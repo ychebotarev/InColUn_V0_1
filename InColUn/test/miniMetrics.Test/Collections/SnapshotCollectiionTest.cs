@@ -15,7 +15,7 @@ namespace miniMetrics.Test.Collections
             collection.AddSnapshot("s1");
             Assert.Equal(1, collection.GetSnapshotCount());
 
-            collection.AddSnapshot("s1");
+            collection.AddSnapshot("s2");
             Assert.Equal(2, collection.GetSnapshotCount());
 
             var s1 = collection.GetSnaphotValues("s1").ToList();

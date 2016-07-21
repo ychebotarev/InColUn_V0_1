@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 
 using LoggerFacade;
@@ -22,12 +23,12 @@ namespace InColUn.Db
 
         public string ConnectionString { get; private set; }
 
-        public abstract DbConnection GetDbConnection();
+        public abstract IDbConnection GetDbConnection();
 
         public ILogger Logger => this.logger;
         public IMetricsService Metrics => this.metricService;
 
-        public DbConnection DbConnection => this.GetDbConnection();
+        public IDbConnection DbConnection => this.GetDbConnection();
 
         public void AddTableService<T>(T service) where T : ITableService
         {
