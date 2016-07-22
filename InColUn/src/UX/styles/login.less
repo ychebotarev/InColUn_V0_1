@@ -1,0 +1,72 @@
+@import "variables/colors.less";
+
+@login-bgnd:#FAFAFA;
+
+.login-block{
+	justify-content: flex-start;
+    align-content: center;
+    align-self: center;
+	align-items: baseline;	
+}
+
+.omb_loginOr {
+    //color: #E0DDDD;
+    font-size: 1.5em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+    padding-bottom: 0.2em;
+    padding-top: 0.2em;
+    position: relative;
+    .omb_hrOr {
+        //background-color: #cdcdcd;
+        height: 1px;
+        margin-bottom: 0px !important;
+        margin-top: 0px !important;
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+    }
+    .omb_spanOr {
+        background-color: @login-bgnd;
+        display: block;
+        left: 50%;
+        margin-left: -1.5em;
+        position: absolute;
+        text-align: center;
+        top: -0.6em;
+        width: 3em;
+    }
+}
+
+.login-box{
+    width: 390px;
+    margin: 10px;
+    background-color: @login-bgnd;
+    color: grey;
+    border-radius: 10px;
+    padding: 15px;
+	border: 1px solid grey;    
+}
+/*
+.form-signin-heading{
+    color:white;
+}*/
+
+.forgot{
+    line-height: 26px;
+    float: right;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.authError{
+    background-color:#FFEBE9;
+    border: 1px solid #BD081C;
+    color:#333;
+    padding: 5px;
+    font-size: 12px;
+    margin-bottom: 10px; 
+}
+    
+@import "bootstrap-social.less";
+@import "components/containers.less";
+@import "components/search-box.less";

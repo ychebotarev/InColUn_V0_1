@@ -1,0 +1,8 @@
+{
+  "name": "InColUn",
+  "private": true,
+  "dependencies": {
+    "jquery": "^2.2.1",
+    "medium-editor": "^5.15.0"
+  }
+}

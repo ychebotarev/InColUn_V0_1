@@ -1,0 +1,24 @@
+.order(@flex-order:0){
+    -webkit-order: @flex-order;
+    -ms-flex-order: @flex-order;
+    order: @flex-order;
+}
+
+.flex(@flex-grow:0, @flex-shrink:1, @flex-basis:auto){
+ -webkit-flex: @flex-grow @flex-shrink @flex-basis;
+    -ms-flex: @flex-grow @flex-shrink @flex-basis;
+    flex: @flex-grow @flex-shrink @flex-basis;
+}
+
+.align-self(@flex-align-self:center){
+    -webkit-align-self: @flex-align-self;
+    -ms-flex-item-align: @flex-align-self;
+    align-self: @flex-align-self;    
+}
+
+.display-flex() {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}

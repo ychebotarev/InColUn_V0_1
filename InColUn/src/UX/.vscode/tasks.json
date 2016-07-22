@@ -1,0 +1,23 @@
+{
+    "version": "0.1.0",
+    "command": "gulp",
+    "isShellCommand": true,
+    "args": [],
+    "tasks": [
+        {
+            "taskName": "build frontend code",
+            "isBuildCommand": true
+        },
+        {
+            "taskName": "build styles - main",
+            "isBuildCommand": true
+        },
+        {
+            "taskName": "build styles - login",
+            "isBuildCommand": true
+        },
+        {
+            "taskName": "clean-ts"
+        }
+    ]
+}

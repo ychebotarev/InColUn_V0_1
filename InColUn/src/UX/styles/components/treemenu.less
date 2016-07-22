@@ -1,0 +1,46 @@
+@import "../variables/colors.less";
+
+.treecontainer{
+  width:100%;
+  background-color:@treecontainer-bgnd;
+  cursor:default;
+}
+
+.treeitem-icon{
+  padding-right:5px;
+}
+
+.tree-toggle{
+  position:absolute;
+  right:0.6em;
+  font-size:0.6em;
+  top:0.1em;
+  cursor:pointer;
+  color:@treecontainer-bgnd;
+  &:hover {
+      color:black;
+      }
+}
+
+.ttb-stack2{
+  color:@ttb-stack2-color;
+  &:hover {
+      color:@ttb-stack2-hover-color;
+      background-color: @ttb-stack2-hover-bgnd;    
+      }
+}
+
+.treelist{
+  padding-left:1em;
+}
+
+.treeheader{
+  position: relative;
+  padding:2px;
+  padding-right:2em;
+  font-size:1.2em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:hover {background-color:@treeheader-hover-bgnd;}
+}

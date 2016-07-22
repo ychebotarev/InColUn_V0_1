@@ -179,3 +179,8 @@ $RECYCLE.BIN/
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
 #####
+
+InColUn/src/UX/node_modules/
+InColUn/src/UX/build/
+InColUn/src/UX/typings/
+InColUn/src/InColUn/wwwroot/lib/
