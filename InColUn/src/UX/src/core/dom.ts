@@ -35,7 +35,7 @@ class Dom{
     public static element(tag:string, className?:string, style?: {}, attributes?:{}):HTMLElement{
         return Dom.Create(tag, className, style, attributes);
     }
-    
+
     public static a(className?:string, style?: {}, attributes?:{}):HTMLAnchorElement{
         return <HTMLAnchorElement>Dom.Create('a', className, style, attributes);
     }

@@ -152,6 +152,7 @@
 	        this.SetCommandDispatcher('OpenBoards', function () { _this.contentArea.OnOpenBoards(); });
 	        this.SetCommandDispatcher('OpenSavedBoards', function () { _this.contentArea.OnOpenSavedBoards(); });
 	        this.SetCommandDispatcher('OpenRecycledBoards', function () { _this.contentArea.OnOpenRecycledBoards(); });
+	        this.SetCommandDispatcher('HideSideBar', function () { _this.sidebar.HideSideBar(); });
 	    }
 	    App.prototype.SetCommandDispatcher = function (key, command) {
 	        this.commands[key] = command;
@@ -170,6 +171,10 @@
 	    };
 	    App.prototype.SetRoot = function (root) {
 	        this.root = root;
+	        var content_area = document.getElementById('content_area');
+	        this.contentArea.SetRoot(content_area);
+	        var sidebar = document.getElementById('sidebar_menu');
+	        this.sidebar.SetRoot(sidebar);
 	    };
 	    App.prototype.LoadBoardInfo = function (user) {
 	    };
@@ -178,16 +183,15 @@
 	    };
 	    App.prototype.Render = function () {
 	        var sidebar = document.getElementById('sidebar_menu');
-	        console.log('rendering');
 	        if (sidebar != undefined) {
-	            this.sidebar.RenderTo(sidebar);
+	            this.sidebar.Render();
 	        }
 	        else {
 	            console.log("can't find sidebar");
 	        }
 	        var content_area = document.getElementById('content_area');
 	        if (content_area != undefined) {
-	            this.contentArea.Render(content_area);
+	            this.contentArea.Render();
 	        }
 	        else {
 	            console.log("can't find content_area");
@@ -199,7 +203,7 @@
 	    };
 	    App.prototype.OnOpenBoard = function (id) {
 	        var _this = this;
-	        $.ajax('/api/board/' + id, {
+	        $.ajax('/api/v1.0/board/' + id, {
 	            type: 'GET',
 	            data: {},
 	            dataType: 'json',
@@ -238,18 +242,27 @@
 	    SideBar.prototype.AddTreeNode = function (node) {
 	        this.treeContainer.AddNode(node);
 	    };
-	    SideBar.prototype.RenderTo = function (sidebar) {
-	        this.treeContainer.Render(sidebar);
+	    SideBar.prototype.SetRoot = function (sidebar) {
+	        this.htmlElement = sidebar;
+	    };
+	    SideBar.prototype.Render = function () {
+	        this.treeContainer.Render(this.htmlElement);
 	    };
 	    SideBar.prototype.OnLoadRecentBoards = function () {
 	        var _this = this;
 	        this.treeContainer.setLoading(true);
-	        $.ajax('/api/recent', {
+	        $.ajax('/api/v1.0/recent', {
 	            type: 'GET',
 	            data: {},
 	            dataType: 'json',
 	            success: function (data, textStatus, jqXHR) { _this.OnRecentLoaded(data, textStatus, jqXHR); }
 	        });
+	    };
+	    SideBar.prototype.ShowSideBar = function () {
+	        this.htmlElement.style.width = '350px';
+	    };
+	    SideBar.prototype.HideSideBar = function () {
+	        this.htmlElement.style.width = '0px';
 	    };
 	    SideBar.prototype.OnRecentLoaded = function (data, textStatus, jqXHR) {
 	        this.treeContainer.setLoading(false);
@@ -299,7 +312,7 @@
 	        this.nodes.forEach(function (node) {
 	            node.Render(treelist);
 	        });
-	        this.self.appendChild(treelist);
+	        this.htmlElement.appendChild(treelist);
 	    };
 	    return TreeContainer;
 	}(UIElement_1.UIElement));
@@ -402,29 +415,29 @@
 	    function UIElement() {
 	    }
 	    UIElement.prototype.CreateDom = function () {
-	        this.self = this.CreateDomImpl();
+	        this.htmlElement = this.CreateDomImpl();
 	    };
 	    UIElement.prototype.Render = function (renderTo) {
 	        this.CreateDom();
-	        if (!this.self) {
+	        if (!this.htmlElement) {
 	            return undefined;
 	        }
 	        this.RenderSelf();
 	        if (renderTo) {
-	            renderTo.appendChild(this.self);
+	            renderTo.appendChild(this.htmlElement);
 	        }
 	    };
 	    UIElement.prototype.Hide = function () {
-	        if (!this.self) {
+	        if (!this.htmlElement) {
 	            return;
 	        }
-	        this.self.style.display = 'none';
+	        this.htmlElement.style.display = 'none';
 	    };
 	    UIElement.prototype.Show = function (show_style) {
-	        if (!this.self) {
+	        if (!this.htmlElement) {
 	            return;
 	        }
-	        this.self.style.display = (!show_style) ? 'block' : show_style;
+	        this.htmlElement.style.display = (!show_style) ? 'block' : show_style;
 	    };
 	    return UIElement;
 	}());
@@ -483,9 +496,9 @@
 	    TreeNode.prototype.RenderSelf = function () {
 	        var header = this.RenderHeader();
 	        var childs = this.RenderChilds();
-	        this.self.appendChild(header);
+	        this.htmlElement.appendChild(header);
 	        if (childs != undefined) {
-	            this.self.appendChild(childs);
+	            this.htmlElement.appendChild(childs);
 	        }
 	    };
 	    TreeNode.prototype.getIconClass = function () {
@@ -550,10 +563,10 @@
 	    function ContentArea() {
 	        this.boxContext = new BoxContext_1.BoxContext();
 	        this.boardsContext = new BoardsContext_1.BoardsContext();
+	        //treeheader.onclick = (ev:MouseEvent) => { application.OnCommand({command:'OpenPage', param1:{guid:this.info.guid}});
 	    }
 	    ContentArea.prototype.OnOpenBoards = function () {
 	        this.boxContext.Hide();
-	        //this.boardsContext.Show('flex');
 	        this.boardsContext.LoadBoards();
 	    };
 	    ContentArea.prototype.OnOpenSavedBoards = function () {
@@ -573,9 +586,13 @@
 	    };
 	    ContentArea.prototype.OnBoxContentChanged = function (guid) {
 	    };
-	    ContentArea.prototype.Render = function (contentArea) {
-	        this.boxContext.Render(contentArea);
-	        this.boardsContext.Render(contentArea);
+	    ContentArea.prototype.SetRoot = function (_root) {
+	        this.htmlElement = _root;
+	        //self.onclick = (ev:MouseEvent) => { application.OnCommand({command:'HideSideBar'})};
+	    };
+	    ContentArea.prototype.Render = function () {
+	        this.boxContext.Render(this.htmlElement);
+	        this.boardsContext.Render(this.htmlElement);
 	        this.boxContext.Hide();
 	        //this.boardsContext.Show('flex');
 	    };
@@ -608,7 +625,7 @@
 	    BoardsContext.prototype.LoadBoards = function () {
 	        var _this = this;
 	        this.isLoading = true;
-	        $.ajax('/api/boards', {
+	        $.ajax('/api/v1.0/boards', {
 	            type: 'GET',
 	            data: {},
 	            dataType: 'json',
@@ -623,10 +640,10 @@
 	    };
 	    BoardsContext.prototype.RenderSelf = function () {
 	        if (this.isLoading) {
-	            this.RenderLoadingState(this.self);
+	            this.RenderLoadingState(this.htmlElement);
 	        }
 	        else {
-	            this.RenderBoards(this.self);
+	            this.RenderBoards(this.htmlElement);
 	        }
 	    };
 	    BoardsContext.prototype.OnBoardsLoaded = function (data, textStatus, jqXHR) {
@@ -636,18 +653,16 @@
 	        if (data.boards && data.boards.length > 0) {
 	            data.boards.forEach(function (board) { _this.boardsInfo[board.id] = new BoardInfo_1.BoardInfo(board); });
 	        }
-	        this.self.innerHTML = '';
+	        this.htmlElement.innerHTML = '';
 	        this.RenderSelf();
 	    };
 	    BoardsContext.prototype.RenderBoards = function (self) {
-	        var spinner = dom_1.Dom.GetElementByClassName(this.self, 'boards-spinner');
+	        var spinner = dom_1.Dom.GetElementByClassName(this.htmlElement, 'boards-spinner');
 	        if (spinner) {
 	            dom_1.Dom.Hide(spinner);
 	        }
 	        var add_board = dom_1.Dom.div('board-item add-board');
-	        var add_board_icon = dom_1.Dom.Create('i');
-	        add_board_icon.innerText = '+';
-	        add_board.appendChild(add_board_icon);
+	        add_board.innerHTML = '  <span>Create New Board</span><div><img src="images/new_board.png"></div><i>+</i>';
 	        self.appendChild(add_board);
 	        for (var key in this.boardsInfo) {
 	            this.boardsInfo[key].Render(self);
@@ -762,12 +777,13 @@
 	        _super.call(this);
 	        this.isLoading = false;
 	        this.boxes = {};
-	        this.createFakeBoxes(); //TODO - delete        
+	        //TODO - delete
+	        this.createFakeBoxes();
 	    }
 	    BoxContext.prototype.LoadPage = function (guid) {
 	        var _this = this;
 	        this.isLoading = true;
-	        $.ajax('/api/section:' + guid, {
+	        $.ajax('/api/v1.0/section:' + guid, {
 	            type: 'GET',
 	            data: {},
 	            dataType: 'json',
@@ -786,7 +802,7 @@
 	    };
 	    BoxContext.prototype.RenderSelf = function () {
 	        for (var guid in this.boxes) {
-	            this.boxes[guid].Render(this.self);
+	            this.boxes[guid].Render(this.htmlElement);
 	        }
 	    };
 	    BoxContext.prototype.OnBoxActivated = function (guid) {
@@ -900,11 +916,11 @@
 	        }
 	    };
 	    Box.prototype.changeActivationState = function () {
-	        var resizer = this.self.getElementsByClassName(BoxResizer_1.BoxResizer.getClass(this.horzResize.GetDirection()))[0];
+	        var resizer = this.htmlElement.getElementsByClassName(BoxResizer_1.BoxResizer.getClass(this.horzResize.GetDirection()))[0];
 	        if (resizer != undefined) {
 	            resizer.style.display = this.state.activated ? 'block' : 'none';
 	        }
-	        var dragger = this.self.getElementsByClassName(BoxDragger_1.BoxDragger.getClass())[0];
+	        var dragger = this.htmlElement.getElementsByClassName(BoxDragger_1.BoxDragger.getClass())[0];
 	        if (dragger != undefined) {
 	            dragger.style.display = this.state.activated ? 'block' : 'none';
 	        }
@@ -969,10 +985,10 @@
 	        this.deactivate();
 	    };
 	    Box.prototype.SetDimentions = function () {
-	        this.self.style.left = String(this.state.dimentions.x) + 'px';
-	        this.self.style.top = String(this.state.dimentions.y) + 'px';
-	        this.self.style.width = String(this.state.dimentions.w) + 'px';
-	        this.self.style.height = String(this.state.dimentions.h) + 'px';
+	        this.htmlElement.style.left = String(this.state.dimentions.x) + 'px';
+	        this.htmlElement.style.top = String(this.state.dimentions.y) + 'px';
+	        this.htmlElement.style.width = String(this.state.dimentions.w) + 'px';
+	        this.htmlElement.style.height = String(this.state.dimentions.h) + 'px';
 	    };
 	    Box.prototype.CreateDomImpl = function () {
 	        var _this = this;
@@ -985,25 +1001,25 @@
 	        var style = window.getComputedStyle(content, null);
 	        if (parseInt(style.height) + 20 != this.state.dimentions.h) {
 	            this.state.dimentions.h = parseInt(style.height) + 20;
-	            this.self.style.height = String(this.state.dimentions.h) + 'px';
+	            this.htmlElement.style.height = String(this.state.dimentions.h) + 'px';
 	        }
 	    };
 	    Box.prototype.OnUpdateHeight = function () {
-	        var content = this.self.getElementsByClassName('internal-box-content')[0];
+	        var content = this.htmlElement.getElementsByClassName('internal-box-content')[0];
 	        var style = window.getComputedStyle(content, null);
 	        if (parseInt(style.height) + 20 != this.state.dimentions.h) {
 	            this.state.dimentions.h = parseInt(style.height) + 20;
 	            this.state.original.h = this.state.dimentions.h;
-	            this.self.style.height = String(this.state.dimentions.h) + 'px';
+	            this.htmlElement.style.height = String(this.state.dimentions.h) + 'px';
 	        }
 	    };
 	    Box.prototype.RenderSelf = function () {
 	        var _this = this;
 	        this.SetDimentions();
-	        this.horzResize.Render(this.self);
-	        this.dragger.Render(this.self);
+	        this.horzResize.Render(this.htmlElement);
+	        this.dragger.Render(this.htmlElement);
 	        var content = dom_1.Dom.div('internal-box-content');
-	        this.self.appendChild(content);
+	        this.htmlElement.appendChild(content);
 	        var editor = new MediumEditor([content], {
 	            buttonLabels: 'fontawesome',
 	            toolbar: {

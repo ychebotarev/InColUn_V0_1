@@ -17,7 +17,7 @@ abstract class UIContainer extends UIElement{
     }
     
     protected RenderSelf(){
-        this.children.forEach(c=>c.Render(this.self));            
+        this.children.forEach(c=>c.Render(this.htmlElement));            
     };
 }
 

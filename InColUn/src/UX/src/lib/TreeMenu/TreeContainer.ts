@@ -38,6 +38,6 @@ export class TreeContainer extends UIElement{
             node.Render(treelist);
         });
                 
-        this.self.appendChild(treelist);
+        this.htmlElement.appendChild(treelist);
     }
 }

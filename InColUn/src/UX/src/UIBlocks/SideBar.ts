@@ -4,6 +4,7 @@ import {TreeContainer} from '../lib/TreeMenu/TreeContainer'
 import {TreeNodeData} from '../lib/TreeMenu/TreeNodeData'
 
 export class SideBar {
+	private htmlElement:HTMLElement;
     private treeContainer:TreeContainer;
     
     constructor(){
@@ -16,19 +17,31 @@ export class SideBar {
     public AddTreeNode(node:TreeNodeData){
         this.treeContainer.AddNode(node);
     }
+
+	public SetRoot(sidebar:HTMLElement){
+		this.htmlElement = sidebar;
+	}
     
-    public RenderTo(sidebar:HTMLElement){
-        this.treeContainer.Render(sidebar);
+    public Render(){
+        this.treeContainer.Render(this.htmlElement);
     }
 	
 	public OnLoadRecentBoards(){
 		this.treeContainer.setLoading(true);
-		$.ajax('/api/recent', {
+		$.ajax('/api/v1.0/recent', {
 			type     : 'GET', 
 			data     : {}, 
 			dataType : 'json',
 			success  : (data: any, textStatus: string, jqXHR: JQueryXHR) => {this.OnRecentLoaded(data, textStatus, jqXHR)}
 		});  
+	}
+
+	public ShowSideBar(){
+		this.htmlElement.style.width = '350px';
+	}
+
+	public HideSideBar(){
+		this.htmlElement.style.width = '0px';
 	}
 	
 	private OnRecentLoaded(data: any, textStatus: string, jqXHR: JQueryXHR) {

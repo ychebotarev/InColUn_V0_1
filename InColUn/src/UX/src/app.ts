@@ -112,6 +112,7 @@ class App{
 		this.SetCommandDispatcher('OpenBoards', () => { this.contentArea.OnOpenBoards()});
 		this.SetCommandDispatcher('OpenSavedBoards', () => { this.contentArea.OnOpenSavedBoards()});
 		this.SetCommandDispatcher('OpenRecycledBoards', () => { this.contentArea.OnOpenRecycledBoards()});
+        this.SetCommandDispatcher('HideSideBar', () => {this.sidebar.HideSideBar()});
     }
     
 	public SetCommandDispatcher(key:string, command:OnCommandCallback){
@@ -134,6 +135,11 @@ class App{
     
     public SetRoot(root:HTMLElement){
         this.root = root;
+        var content_area = document.getElementById('content_area');
+        this.contentArea.SetRoot(content_area);
+
+        var sidebar = document.getElementById('sidebar_menu');
+        this.sidebar.SetRoot(sidebar);
     }
 
     public LoadBoardInfo(user:string){
@@ -146,9 +152,8 @@ class App{
     
     public Render(){
         var sidebar = document.getElementById('sidebar_menu');
-        console.log('rendering');
         if (sidebar != undefined){
-            this.sidebar.RenderTo(sidebar);
+            this.sidebar.Render();
         }
         else{
             console.log("can't find sidebar");
@@ -156,7 +161,7 @@ class App{
         
         var content_area = document.getElementById('content_area');
         if (content_area != undefined){
-            this.contentArea.Render(content_area);
+            this.contentArea.Render();
         }
         else{
             console.log("can't find content_area");
@@ -169,7 +174,7 @@ class App{
 	}
 	
 	public OnOpenBoard(id:string){
-		$.ajax('/api/board/'+id, {
+		$.ajax('/api/v1.0/board/'+id, {
 			type     : 'GET', 
 			data     : {}, 
 			dataType : 'json',

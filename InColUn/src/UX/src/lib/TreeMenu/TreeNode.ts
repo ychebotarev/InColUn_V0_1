@@ -56,9 +56,9 @@ export class TreeNode extends UIElement{
         var header = this.RenderHeader();
         var childs = this.RenderChilds();
         
-        this.self.appendChild(header);
+        this.htmlElement.appendChild(header);
         if (childs != undefined){
-            this.self.appendChild(childs);
+            this.htmlElement.appendChild(childs);
         }
     }
     

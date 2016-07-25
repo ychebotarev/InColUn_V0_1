@@ -11,12 +11,13 @@ export class BoxContext extends UIElement {
 		super();
 		this.isLoading = false;
         this.boxes = {};
-		this.createFakeBoxes();//TODO - delete        
+        //TODO - delete
+		this.createFakeBoxes();        
     }
 
 	public LoadPage(guid:string){
 		this.isLoading = true;
-		$.ajax('/api/section:'+guid, {
+		$.ajax('/api/v1.0/section:'+guid, {
 			type     : 'GET', 
 			data     : {}, 
 			dataType : 'json',
@@ -41,7 +42,7 @@ export class BoxContext extends UIElement {
 
     protected RenderSelf(){
         for(var guid in this.boxes){
-            this.boxes[guid].Render(this.self);
+            this.boxes[guid].Render(this.htmlElement);
         }
 	}
 	

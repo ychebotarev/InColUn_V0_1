@@ -2,10 +2,10 @@ abstract class UIElement {
     constructor(){
     }
     
-    protected self:HTMLElement;
+    protected htmlElement:HTMLElement;
 
     protected CreateDom(){
-        this.self = this.CreateDomImpl();
+        this.htmlElement = this.CreateDomImpl();
     }
     
     protected abstract CreateDomImpl():HTMLElement;
@@ -13,29 +13,29 @@ abstract class UIElement {
     
     public Render(renderTo:HTMLElement){
         this.CreateDom();
-        if(!this.self){
+        if(!this.htmlElement){
             return undefined;
         }
         
         this.RenderSelf();
         
         if (renderTo){
-            renderTo.appendChild(this.self);
+            renderTo.appendChild(this.htmlElement);
         }
     }
 	
 	public Hide(){
-		if(!this.self){
+		if(!this.htmlElement){
 			return;
 		}
-		this.self.style.display = 'none';
+		this.htmlElement.style.display = 'none';
 	}    
 	
 	public Show(show_style?: string){
-		if(!this.self){
+		if(!this.htmlElement){
 			return;
 		}
-		this.self.style.display = (!show_style)?'block':show_style;
+		this.htmlElement.style.display = (!show_style)?'block':show_style;
 	}    
 }
 

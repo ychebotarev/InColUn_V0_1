@@ -396,6 +396,9 @@ namespace InColUn
                 routes.MapRoute(
                     name: "Boards",
                     template: "{controller=Boards}/{action=Index}");
+                routes.MapRoute(
+                    name: "api/v1.0",
+                    template: "{controller=Api}/{action=Index}");
             });
         }
     }

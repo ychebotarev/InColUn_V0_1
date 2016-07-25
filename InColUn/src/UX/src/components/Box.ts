@@ -105,12 +105,12 @@ export class Box extends UIElement{
     }
     
     protected changeActivationState(){
-        var resizer = <HTMLElement>this.self.getElementsByClassName(BoxResizer.getClass(this.horzResize.GetDirection()))[0];
+        var resizer = <HTMLElement>this.htmlElement.getElementsByClassName(BoxResizer.getClass(this.horzResize.GetDirection()))[0];
         if(resizer != undefined){
             resizer.style.display = this.state.activated?'block':'none'; 
         }
         
-        var dragger = <HTMLElement>this.self.getElementsByClassName(BoxDragger.getClass())[0];
+        var dragger = <HTMLElement>this.htmlElement.getElementsByClassName(BoxDragger.getClass())[0];
         if(dragger != undefined){
             dragger.style.display = this.state.activated?'block':'none'; 
         }
@@ -196,11 +196,11 @@ export class Box extends UIElement{
     }
     
     protected SetDimentions(){
-        this.self.style.left = String(this.state.dimentions.x)+'px';
-        this.self.style.top = String(this.state.dimentions.y)+'px';
+        this.htmlElement.style.left = String(this.state.dimentions.x)+'px';
+        this.htmlElement.style.top = String(this.state.dimentions.y)+'px';
         
-        this.self.style.width = String(this.state.dimentions.w)+'px';
-        this.self.style.height = String(this.state.dimentions.h)+'px';
+        this.htmlElement.style.width = String(this.state.dimentions.w)+'px';
+        this.htmlElement.style.height = String(this.state.dimentions.h)+'px';
     }
     
     protected CreateDomImpl():HTMLElement{
@@ -217,28 +217,28 @@ export class Box extends UIElement{
         if (parseInt(style.height) + 20 != this.state.dimentions.h)
         {
             this.state.dimentions.h = parseInt(style.height) + 20;
-            this.self.style.height = String(this.state.dimentions.h)+'px';
+            this.htmlElement.style.height = String(this.state.dimentions.h)+'px';
         }
     }
     
     protected OnUpdateHeight(){
-        var content = this.self.getElementsByClassName('internal-box-content')[0];
+        var content = this.htmlElement.getElementsByClassName('internal-box-content')[0];
         var style = window.getComputedStyle(content, null);
         if (parseInt(style.height) + 20 != this.state.dimentions.h)
         {
             this.state.dimentions.h = parseInt(style.height) + 20;
             this.state.original.h = this.state.dimentions.h;
-            this.self.style.height = String(this.state.dimentions.h)+'px';
+            this.htmlElement.style.height = String(this.state.dimentions.h)+'px';
         }
     }
     
     protected RenderSelf(){
         this.SetDimentions();
-        this.horzResize.Render(this.self);
-        this.dragger.Render(this.self);
+        this.horzResize.Render(this.htmlElement);
+        this.dragger.Render(this.htmlElement);
         
         var content=Dom.div('internal-box-content');
-        this.self.appendChild(content);
+        this.htmlElement.appendChild(content);
         var editor = new MediumEditor([content],
         {
             buttonLabels: 'fontawesome',

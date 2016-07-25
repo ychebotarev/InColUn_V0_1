@@ -15,7 +15,7 @@ export class BoardsContext extends UIElement {
 
 	public LoadBoards() {
 		this.isLoading = true;
-		$.ajax('/api/boards', {
+		$.ajax('/api/v1.0/boards', {
 			type: 'GET',
 			data: {},
 			dataType: 'json',
@@ -35,10 +35,10 @@ export class BoardsContext extends UIElement {
 
     protected RenderSelf() {
 		if (this.isLoading) {
-			this.RenderLoadingState(this.self);
+			this.RenderLoadingState(this.htmlElement);
 		}
 		else {
-			this.RenderBoards(this.self);
+			this.RenderBoards(this.htmlElement);
 		}
     }
 
@@ -48,20 +48,18 @@ export class BoardsContext extends UIElement {
 		if(data.boards && data.boards.length > 0){
 			data.boards.forEach(board => { this.boardsInfo[board.id] = new BoardInfo(board) });
 		}
-		this.self.innerHTML='';
+		this.htmlElement.innerHTML='';
 		this.RenderSelf();
 	}
 
 	private RenderBoards(self: HTMLElement) {
-		var spinner = Dom.GetElementByClassName(this.self, 'boards-spinner');
+		var spinner = Dom.GetElementByClassName(this.htmlElement, 'boards-spinner');
 		if (spinner) {
 			Dom.Hide(spinner);
 		}
 
 		var add_board = Dom.div('board-item add-board');
-		var add_board_icon = Dom.Create('i');
-		add_board_icon.innerText = '+';
-		add_board.appendChild(add_board_icon);
+		add_board.innerHTML = '  <span>Create New Board</span><div><img src="images/new_board.png"></div><i>+</i>';
 		self.appendChild(add_board);
 
 		for (var key in this.boardsInfo) {

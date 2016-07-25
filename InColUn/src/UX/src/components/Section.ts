@@ -16,8 +16,8 @@ class Section extends UIElement{
     }
     
     protected RenderSelf(){
-        this.RenderHeader(this.self);
-        this.boxes.forEach(box => box.Render(this.self));
+        this.RenderHeader(this.htmlElement);
+        this.boxes.forEach(box => box.Render(this.htmlElement));
     }    
     
     private RenderHeader(root:HTMLElement){

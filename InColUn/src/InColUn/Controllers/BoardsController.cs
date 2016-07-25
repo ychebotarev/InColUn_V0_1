@@ -8,8 +8,9 @@ namespace InColUn.Controllers
         {
             if(!HttpContext.Request.Cookies.ContainsKey("access_token"))
             {
-                return RedirectToAction("/");
+                return RedirectToAction("Index", "Home");
             }
+
             var token = HttpContext.Request.Cookies["access_token"];
 
             //TODO refresh token
