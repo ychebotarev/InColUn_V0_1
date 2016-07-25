@@ -252,33 +252,35 @@ fieldset[disabled] .btn-google.focus {
 .sidebar {
   padding: 0em;
   color: black;
-  background-color: grey;
+  background-color: white;
   overflow: auto;
   width: 0px;
+  height: 100%;
   align-self: stretch;
   position: absolute;
   z-index: 1;
   overflow-x: hidden;
   transition: 0.5s;
-  padding-top: 60px;
+  padding-top: 5px;
+  border: 1px solid grey;
 }
-.sidenav a {
-  padding: 8px 8px 8px 32px;
+.sidebar a {
+  padding: 8px;
   text-decoration: none;
-  font-size: 25px;
+  font-size: 1.2em;
   color: #818181;
   display: block;
   transition: 0.3s;
 }
-.sidenav a:hover,
+.sidebar a:hover,
 .offcanvas a:focus {
   color: #f1f1f1;
 }
 .closebtn {
   position: absolute;
   top: 0;
-  right: 25px;
-  font-size: 36px !important;
+  right: 5px;
+  font-size: 1.2em !important;
   margin-left: 50px;
 }
 .internal-box {

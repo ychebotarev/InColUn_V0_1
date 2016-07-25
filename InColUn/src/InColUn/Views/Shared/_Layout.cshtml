@@ -11,13 +11,13 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>
-    @RenderSection("scripts", required: false)
-    @RenderSection("styles", required: false)
+    @RenderSection("scripts")
+    @RenderSection("styles")
 </head>
 
 <body>
-    <div class="container body-content">
-        @RenderBody()
-    </div>
+    @RenderBody()
+
+    @RenderSection("scripts_after_body", required: false)
 </body>
 </html>

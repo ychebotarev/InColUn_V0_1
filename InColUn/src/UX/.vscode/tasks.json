@@ -9,7 +9,7 @@
             "isBuildCommand": true
         },
         {
-            "taskName": "build styles - main",
+            "taskName": "build styles - boards",
             "isBuildCommand": true
         },
         {

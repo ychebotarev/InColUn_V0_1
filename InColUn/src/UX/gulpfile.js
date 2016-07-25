@@ -9,26 +9,24 @@ var less = require('gulp-less');
 var minifyCSS = require('gulp-clean-css');
 var gutil = require('gulp-util');
 
-gulp.task('build styles - main', function () {
-  return gulp.src('./styles/main.less')
+gulp.task('build styles - boards', function () {
+  return gulp.src('./styles/boards.less')
     .pipe(less())
     //.pipe(minifyCSS())
-    .pipe(gulp.dest('./wwwroot/app'));
+    .pipe(gulp.dest('../InColUn/wwwroot/css'));
 });
 
 gulp.task('build styles - login', function () {
   return gulp.src('./styles/login.less')
     .pipe(less())
     //.pipe(minifyCSS())
-    .pipe(gulp.dest('./wwwroot/app'));
+    .pipe(gulp.dest('../InColUn/wwwroot/css'));
 });
 
 gulp.task('clean-ts', function (cb) {
     var typeScriptGenFiles = [
                                 './build/**/*.js',   
                                 './build/**/*.js.map',   
-                                './wwwroot/app/build/*.js',
-                                './wwwroot/app/build/*.js.map',
                                 './test/**/*.js',
                                 './test/**/*.js.map'
                             ];

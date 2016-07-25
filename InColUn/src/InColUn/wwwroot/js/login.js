@@ -1,5 +1,6 @@
 function successAuth(result, errorBlock, errorMsg){
   if(result.success){
+    console.log(result.token);
     document.cookie = "access_token="+result.token;
     window.location.replace('/boards');
   }else{

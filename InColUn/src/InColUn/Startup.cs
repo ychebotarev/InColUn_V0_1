@@ -242,7 +242,7 @@ namespace InColUn
 
         private async Task ProcessAuthSuccess(HttpContext context, string token_auth)
         {
-            string json = JsonConvert.SerializeObject(new { success = true, access_token = token_auth });
+            string json = JsonConvert.SerializeObject(new { success = true, token = token_auth });
             await context.Response.WriteAsync(json);
         }
 
@@ -375,8 +375,7 @@ namespace InColUn
             app.Map("/auth/Facebook/callback", FacebookLoginCallback);
             app.Map("/auth/google/callback", GoogleLoginCallback);
 
-            app.Map("/boards", Boards);
-
+            //app.Map("/boards", Boards);
 
             if (env.IsDevelopment())
             {
@@ -394,17 +393,10 @@ namespace InColUn
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(
+                    name: "Boards",
+                    template: "{controller=Boards}/{action=Index}");
             });
-		
-            //test		
-            /*app.Run(async (context) =>
-            {
-                context.Response.ContentType = "text/html";
-                await context.Response.WriteAsync("<html><body>");
-                await context.Response.WriteAsync("<a href=\"/auth/Facebook/Login\">FaceBookLogin</a><br>");
-                await context.Response.WriteAsync("<a href=\"/auth/Google/Login\">GoogleLogin</a>");
-                await context.Response.WriteAsync("</body></html>");
-            });*/
         }
     }
 }
