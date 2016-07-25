@@ -1,4 +1,4 @@
-USE incolun
+USE InColIn
 GO 
 
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'boards') 

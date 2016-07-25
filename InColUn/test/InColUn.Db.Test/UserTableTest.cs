@@ -43,19 +43,19 @@ namespace InColUn.Db.Test
             userTable.DeleteUserById(id);
             userTable.DeleteUserById(id + 1);
 
-            var result = userTable.CreateLocalUser(id, name, name, name + "@test.com");
+            var result = userTable.CreateLocalUser(id, name, name, id, name + "@test.com");
             Assert.True(result, "First call");
 
-            result = userTable.CreateLocalUser(id, name, name , name + "@test.com");
+            result = userTable.CreateLocalUser(id, name, name , id, name + "@test.com");
             Assert.False(result, "Same insert paraemters");
 
-            result = userTable.CreateLocalUser(id, name + "1", name + "1", name + "1@test1.com");
+            result = userTable.CreateLocalUser(id, name + "1", name + "1", id + 1, name + "1@test1.com");
             Assert.False(result, "Same ID");
 
-            result = userTable.CreateLocalUser(id + 1, name + "1" , name + "1", name + "@test.com");
+            result = userTable.CreateLocalUser(id + 1, name + "1" , name + "1", id + 1, name + "@test.com");
             Assert.False(result, "Same login string");
 
-            result = userTable.CreateLocalUser(id + 1, "'" + name + "2'", "'" + name + "2'", "'" + name + "@test.com or '1");
+            result = userTable.CreateLocalUser(id + 1, "'" + name + "2'", "'" + name + "2'", id + 2, "'" + name + "@test.com or '1");
             Assert.True(result);
 
             userTable.DeleteUserById(id);
@@ -74,7 +74,7 @@ namespace InColUn.Db.Test
             var ex = Record.Exception(() => this.fixture.userTable.FindUserById(id+1));
             Assert.Null(ex);
 
-            var result = userTable.CreateLocalUser(id, name, name , name+"@test.com");
+            var result = userTable.CreateLocalUser(id, name, name , id, name+"@test.com");
             Assert.True(result, "UserTableFindUserById First call");
 
             var user = userTable.FindUserById(id);
@@ -97,10 +97,10 @@ namespace InColUn.Db.Test
             long id = name.GetHashCode();
             var userTable = this.fixture.userTable;
 
-            var result = userTable.CreateLocalUser(id, name, name, name+"@test.com");
+            var result = userTable.CreateLocalUser(id, name, name, id, name+"@test.com");
             Assert.True(result, "First call");
 
-            var user = this.fixture.userTable.FindUserByLoginString(name+"@test.com");
+            var user = this.fixture.userTable.FindUserByLoginString(name + "@test.com");
             Assert.NotNull(user);
             Assert.Equal(id, user.Id);
             Assert.Equal(name+"@test.com", user.login_string);

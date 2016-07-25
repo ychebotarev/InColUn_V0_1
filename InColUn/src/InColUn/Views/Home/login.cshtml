@@ -1,0 +1,43 @@
+<div class="login-box" id="login_box">
+    <form class="form-login" action="/auth/login" method="post" id="form-login">
+        <h2 class="form-signin-heading"><i class="fa fa-sign-in"></i>&nbsp;&nbsp; Sign In</h2>
+        <div class="form-group">
+            <div class="input-group input-group-lg">
+                <i class="input-group-addon fa fa-envelope fa-lg" id="sa-login-email"></i>
+                <input type="email" class="form-control" placeholder="Email address" aria-describedby="sa-login-email" name="email" id="i-login-email">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group input-group-lg">
+                <i class="input-group-addon fa fa-key fa-lg" id="sa-login-pwd"></i>
+                <input type="password" class="form-control" placeholder="Password" aria-describedby="sa-login-pwd" name="password" id="i-login-pwd">
+            </div>
+        </div>
+        <div class="authError" id="loginError" style="display: none;"><strong id="loginErrorMessage"></strong></div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="remember-me"> Remember me
+            </label>
+        </div>
+        <a class="forgot" href="/account/begin_password_reset">Forgot password?</a>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" style="background-color:cadetblue">Sign In</button>
+        <div class="row omb_row-sm-offset-3 omb_loginOr">
+            <div>
+                <hr class="omb_hrOr">
+                <span class="omb_spanOr">OR</span>
+            </div>
+        </div>
+        <div>
+            <div class="form-group">
+                <a class="btn btn-block btn-social btn-fbk" href="/auth/facebook/login">
+                    <i class="fa fa-facebook"></i> Log in with Facebook
+                </a>
+            </div>
+            <div class="form-group">
+                <a class="btn btn-block btn-social btn-google" href="/auth/google/login">
+                    <i class="fa fa-google"></i> Log in with Google
+                </a>
+            </div>
+        </div>
+    </form>
+</div>

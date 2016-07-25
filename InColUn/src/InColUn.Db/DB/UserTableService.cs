@@ -1,5 +1,4 @@
-﻿using Helpers;
-using InColUn.Db.Models;
+﻿using InColUn.Db.Models;
 
 namespace InColUn.Db
 {
@@ -52,9 +51,8 @@ namespace InColUn.Db
         /// <param name="password">User password. Will be converted into hash</param>
         /// <param name="email">Uer email</param>
         /// <returns></returns>
-        public bool CreateLocalUser(long Id, string name, string password, string email)
+        public bool CreateLocalUser(long Id, string name, string password_hash, long salt, string email)
         {
-            var hs = Crypto.GeneratePasswordHashSalt(password);
             var insertQuery = "INSERT INTO users (id, login_string, password_hash, salt, display_name, email, auth_provider)" +
                 " VALUES (@id,@ls, @ps,@salt, @name, @email,'L')";
 
@@ -62,8 +60,8 @@ namespace InColUn.Db
             {
                 id = Id,
                 ls = email,
-                ps = hs.Item1,
-                salt = hs.Item2,
+                ps = password_hash,
+                salt = salt,
                 name = name,
                 email = email
             });

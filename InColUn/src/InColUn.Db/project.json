@@ -3,7 +3,6 @@
 
   "dependencies": {
     "Dapper": "1.50.1",
-    "InColUn.Helpers": "1.0.0-*",
     "LoggerFacade": "1.0.0-*",
     "MetricsFacade": "1.0.0-*",
     "NETStandard.Library": "1.6.0",

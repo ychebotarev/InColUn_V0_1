@@ -1,4 +1,4 @@
-USE incolun
+USE InColUn
 GO 
 
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'users') 

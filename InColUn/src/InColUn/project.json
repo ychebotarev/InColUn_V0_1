@@ -21,7 +21,10 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "miniAuth": "1.0.0-*",
-    "Microsoft.AspNetCore.Diagnostics": "1.0.0"
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "InColUn.Db": "1.0.0-*",
+    "FlakeGen": "1.0.0-*",
+    "InColUn.Helpers": "1.0.0-*"
   },
 
   "tools": {

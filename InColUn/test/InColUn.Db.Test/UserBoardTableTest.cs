@@ -53,8 +53,8 @@ namespace InColUn.Db.Test
             userBoardTable.DeleteUserBoard(id + 2, id + 4);
 
             //Setup boards
-            userTable.CreateLocalUser(id + 1, "test1", "test2", name+"1@test.com");
-            userTable.CreateLocalUser(id + 2, "test2", "test2", name+"2@test.com");
+            userTable.CreateLocalUser(id + 1, "test1", "test2", id + 1, name+"1@test.com");
+            userTable.CreateLocalUser(id + 2, "test2", "test2", id + 2, name + "2@test.com");
 
             boardsTable.CreateBoard(id + 1, name+"1");
             boardsTable.CreateSection(id + 2, name+"2", id + 1, id + 1);

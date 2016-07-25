@@ -4,11 +4,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using miniAuth.FacebookOAuth;
 using miniAuth.GoogleOAuth;
 using Newtonsoft.Json;
+using Microsoft.IdentityModel.Tokens;
+using miniAuth.Token;
+using System.Security.Cryptography;
 
 namespace InColUn
 {
@@ -23,9 +27,6 @@ namespace InColUn
 
             if (env.IsEnvironment("Development"))
             {
-                // This will push telemetry data through Application Insights pipeline faster, 
-                //allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: true);
             }
 
             builder.AddEnvironmentVariables();
@@ -34,15 +35,54 @@ namespace InColUn
 
         public IConfigurationRoot Configuration { get; }
 
+
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration["connection_string:mssql"];
+
             var authService = new miniAuth.OAuthService(new miniAuth.OAuthServiceOptions());
+            //TODO add logger
+            var msDBContext = new Db.MSSqlDbContext(connectionString, null, null);
+            msDBContext.AddTableService(new Db.UserTableService(msDBContext));
+            msDBContext.AddTableService(new Db.BoardsTableService(msDBContext));
+            msDBContext.AddTableService(new Db.UserBoardTableService(msDBContext));
+
+            var flakeIdGenerator = new FlakeGen.Id64Generator();
 
             this.AddFacebookOAuthStrategy(authService);
             this.AddGoogleOAuthStrategy(authService);
 
             services.AddSingleton(authService);
+            services.AddSingleton(msDBContext);
+            services.AddSingleton(flakeIdGenerator);
+
+            this.ConfigureToken(services);
+
             services.AddMvc();
+        }
+
+        private void ConfigureToken(IServiceCollection services)
+        {
+            byte[] keyForHmacSha256 = new byte[64];
+
+            var randomGen = RandomNumberGenerator.Create();
+            randomGen.GetBytes(keyForHmacSha256);
+
+            var securityKey = new SymmetricSecurityKey(keyForHmacSha256);
+            var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+            var options = new TokenProviderOptions
+            {
+                Issuer = "InColUn",
+                Audience = "All",
+                SigningCredentials = signingCredentials,
+                Expiration = TimeSpan.FromMilliseconds(1000)
+            };
+
+            //TODO add logger
+            var tokenProvider = new TokenProvider(options, null);
+
+            services.AddSingleton(tokenProvider);
         }
 
         private void AddFacebookOAuthStrategy(miniAuth.OAuthService authService)
@@ -140,22 +180,53 @@ namespace InColUn
             ClaimsIdentity identity, 
             string authSchema)
         {
-            context.Response.ContentType = "text/html";
-            await context.Response.WriteAsync("<html><body>");
-            await context.Response.WriteAsync("external login successfull<br/>");
-            await context.Response.WriteAsync(authSchema);
-            await context.Response.WriteAsync("<br/>");
+            context.Response.ContentType = "application/json; charset=utf-8";
 
-            //var user = GetExternalUser(ClaimsIdentity identity, string authSchem);
-            //var token = context.
+            string name = string.Empty;
+            string email = string.Empty;
+            string profileId = string.Empty;
 
             foreach (var claim in identity.Claims)
             {
-                await context.Response.WriteAsync(claim.ToString());
-                await context.Response.WriteAsync("<br/>");
+                if (claim.Type == ClaimTypes.Email) email = claim.Value;
+                else if (claim.Type == ClaimTypes.NameIdentifier) profileId = claim.Value;
+                else if (claim.Type == ClaimTypes.Name) name = claim.Value;
             }
 
-            await context.Response.WriteAsync("</body></html>");
+            if(string.IsNullOrEmpty(name) || string.IsNullOrEmpty(profileId) || string.IsNullOrEmpty(email))
+            {
+                await this.ProcessAuthFailure(context
+                    , string.Format("Information from external provider{0} is missing", authSchema));
+                return;
+            }
+
+            var dbContext = app.ApplicationServices.GetService<Db.MSSqlDbContext>();
+            var userTable = dbContext.GetTableService<Db.UserTableService>();
+
+            var user = userTable.FindUserByLoginString(email);
+
+            var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
+            if (user != null)
+            {
+                var tokenResponse = tokenProvider.GenerateUserToken(user.Id, name);
+                await this.ProcessAuthSuccess(context, tokenResponse.access_token);
+                return;
+            }
+
+            var flakeIdGenerator = app.ApplicationServices.GetService<FlakeGen.Id64Generator>();
+            var userId = flakeIdGenerator.GenerateId();
+            bool result = userTable.CreateExternalUser(userId, profileId, name, email, authSchema.Substring(0,1));
+
+            if(!result)
+            {
+                await this.ProcessAuthFailure(context, "Erroe authentification external user");
+                return;
+            }
+
+            {
+                var tokenResponse = tokenProvider.GenerateUserToken(userId, name);
+                await this.ProcessAuthSuccess(context, tokenResponse.access_token);
+            }
         }
 
         private async Task OnExternalLoginFailure(
@@ -164,32 +235,150 @@ namespace InColUn
             string error, 
             string authSchema)
         {
-            await context.Response.WriteAsync(string.Format("External Login for {0} Failed.<br/>Error: ", authSchema));
-            await context.Response.WriteAsync(error);
-
-            var authResponse = new miniAuth.AuthResponse
-            {
-                Success = false,
-                Message = "Login failed"
-            };
-
-            context.Response.Clear();
             context.Response.ContentType = "application/json; charset=utf-8";
-            string json = JsonConvert.SerializeObject(authResponse);
+            await this.ProcessAuthFailure(context
+                , string.Format("External Login for {0} Failed.<br/>Error: {1}", authSchema, error));
+        }
+
+        private async Task ProcessAuthSuccess(HttpContext context, string token_auth)
+        {
+            string json = JsonConvert.SerializeObject(new { success = true, access_token = token_auth });
             await context.Response.WriteAsync(json);
+        }
+
+        private async Task ProcessAuthFailure(HttpContext context, string message)
+        {
+            string json = JsonConvert.SerializeObject(new { success = false, message = message });
+            await context.Response.WriteAsync(json);
+        }
+
+        private void SignUp(IApplicationBuilder app)
+        {
+            app.Run(async context =>
+            {
+                context.Response.ContentType = "application/json; charset=utf-8";
+
+                if (   !context.Request.Form.ContainsKey("name") 
+                    || !context.Request.Form.ContainsKey("email")
+                    || !context.Request.Form.ContainsKey("password"))
+                {
+                    await this.ProcessAuthFailure(context, "Can't create user, some fields are missing");
+                    return;
+                }
+
+                var name = context.Request.Form["name"].ToString();
+                var email = context.Request.Form["email"].ToString();
+                var password = context.Request.Form["password"].ToString();
+
+                if(string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                {
+                    await this.ProcessAuthFailure(context, "Can't create user, some fields are empty");
+                    return;
+                }
+
+                var dbContext = app.ApplicationServices.GetService<Db.MSSqlDbContext>();
+                var userTable = dbContext.GetTableService<Db.UserTableService>();
+
+                var ph = Helpers.Crypto.GeneratePasswordHashSalt(password);
+
+                var user = userTable.FindUserByLoginString(email);
+                if(user != null)
+                {
+                    await this.ProcessAuthFailure(context, "User already exist.");
+                    return;
+                }
+
+                var flakeIdGenerator = app.ApplicationServices.GetService<FlakeGen.Id64Generator>();
+                var userId = flakeIdGenerator.GenerateId();
+
+                if (!userTable.CreateLocalUser(userId, name, ph.Item1, ph.Item2, email))
+                {
+                    await this.ProcessAuthFailure(context, "Failed to create a user");
+                    return;
+                }
+
+                var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
+                var tokenResponse = tokenProvider.GenerateUserToken(userId, name);
+
+                await this.ProcessAuthSuccess(context, tokenResponse.access_token);
+            });
+        }
+
+        private void SignIn(IApplicationBuilder app)
+        {
+            app.Run(async context =>
+            {
+                context.Response.ContentType = "application/json; charset=utf-8";
+
+                if (!context.Request.Form.ContainsKey("email")
+                    || !context.Request.Form.ContainsKey("password"))
+                {
+                    await this.ProcessAuthFailure(context, "Can't login, some fields are missing");
+                    return;
+                }
+
+                var name = context.Request.Form["email"].ToString();
+                var password = context.Request.Form["password"].ToString();
+
+                if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
+                {
+                    await this.ProcessAuthFailure(context, "Can't login, some fields are empty.");
+                    return;
+                }
+
+                var dbContext = app.ApplicationServices.GetService<Db.MSSqlDbContext>();
+                var userTable = dbContext.GetTableService<Db.UserTableService>();
+
+                var user = userTable.FindUserByLoginString(name);
+                if (user == null)
+                {
+                    await this.ProcessAuthFailure(context, "Can't find user with this name");
+                    return;
+                }
+
+                var password_hash = Helpers.Crypto.GeneratePasswordHash(password, user.salt ?? 0);
+                if(password_hash != user.password_hash)
+                {
+                    await this.ProcessAuthFailure(context, "Wrong password.");
+                    return;
+                }
+
+                var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
+                var tokenResponse = tokenProvider.GenerateUserToken(user.Id, user.display_name);
+
+                await this.ProcessAuthSuccess(context, tokenResponse.access_token);
+            });
+        }
+
+        public void Boards(IApplicationBuilder app)
+        {
+            app.Run(async context =>
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.WriteAsync("<html><body>");
+                await context.Response.WriteAsync("Hello boards");
+                await context.Response.WriteAsync("</body></html>");
+            });
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
 
-            app.Map("/auth/Facebook/Login", FacebookLogin);
-            app.Map("/auth/Google/Login", GoogleLogin);
+            app.Map("/auth/signup", SignUp);
+            app.Map("/auth/login", SignIn);
+
+            app.Map("/auth/facebook/login", FacebookLogin);
+            app.Map("/auth/google/login", GoogleLogin);
 
             app.Map("/auth/Facebook/callback", FacebookLoginCallback);
             app.Map("/auth/google/callback", GoogleLoginCallback);
-            
-            if(env.IsDevelopment())
+
+            app.Map("/boards", Boards);
+
+
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -207,8 +396,7 @@ namespace InColUn
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 		
-//test		
-
+            //test		
             /*app.Run(async (context) =>
             {
                 context.Response.ContentType = "text/html";
