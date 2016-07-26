@@ -113,6 +113,7 @@ class App{
 		this.SetCommandDispatcher('OpenSavedBoards', () => { this.contentArea.OnOpenSavedBoards()});
 		this.SetCommandDispatcher('OpenRecycledBoards', () => { this.contentArea.OnOpenRecycledBoards()});
         this.SetCommandDispatcher('HideSideBar', () => {this.sidebar.HideSideBar()});
+        this.SetCommandDispatcher('NewBoard', () => {this.NewBoard()});
     }
     
 	public SetCommandDispatcher(key:string, command:OnCommandCallback){
@@ -194,6 +195,10 @@ class App{
     private  SectionsToNodes(sections:ISection[]):TreeNodeData[]{
         return null;   
     }
+
+	private NewBoard(){
+		$('#newBoardModal').modal('show');
+	}
 }
 
 let application = new App();
