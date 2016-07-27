@@ -4,68 +4,122 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using miniAuth.Token;
+
 
 namespace InColUn.Controllers
 {
-    public class ApiController : Controller
+    public class ApiController 
     {
-        private TokenProvider tokenProvider;
-        private Db.MSSqlDbContext dbContext;
-
-        public ApiController(TokenProvider tokenProvider, Db.MSSqlDbContext dbContext)
+        public static async Task GetBoards(IApplicationBuilder app, HttpContext context)
         {
-            this.tokenProvider = tokenProvider;
-            this.dbContext = dbContext;
-        }
+            context.Response.ContentType = "application/json; charset=utf-8";
 
-        public IActionResult Index()
-        {
-            //return list ofavailable api
-            if (!HttpContext.Request.Cookies.ContainsKey("access_token"))
+            if (!context.Request.Cookies.ContainsKey("access_token"))
             {
-                return RedirectToAction("Index", "Home");
+                await ApiController.FailureResponse(context, "Access Token is missing");
+                return;
             }
 
-            var token = HttpContext.Request.Cookies["access_token"];
-
-            //TODO refresh token
-            return View();
-        }
-
-        public IActionResult Boards()
-        {
-            if (!HttpContext.Request.Cookies.ContainsKey("access_token"))
-            {
-                return FailureResponse("Access Token is missing");
-            }
-
-            var token = HttpContext.Request.Cookies["access_token"];
-
-            var result = this.tokenProvider.ValidateToken(token);
+            var token = context.Request.Cookies["access_token"];
+            var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
+            var result = tokenProvider.ValidateToken(token);
             if(result == null)
             {
-                return FailureResponse("Invalid access token");
+                await ApiController.FailureResponse(context, "Invalid access token");
+                return;
             }
 
-            var boardsTable = this.dbContext.GetTableService<Db.BoardsTableService>();
+            var dbContext = app.ApplicationServices.GetService<Db.MSSqlDbContext>();
+
+            var boardsTable = dbContext.GetTableService<Db.BoardsTableService>();
             var boards = boardsTable.GetBoards(result.Value).ToList();
-            return new ContentResult
-            {
-                Content = JsonConvert.SerializeObject(new { success = true, boards = boards }),
-                ContentType = "application/json; charset=utf-8",
-                StatusCode = 401
-            };
+
+            var content = JsonConvert.SerializeObject(new { success = true, boards = boards });
+            await context.Response.WriteAsync(content);
         }
 
-        private ContentResult FailureResponse(string message)
+        public static async Task ApiBoard(IApplicationBuilder app, HttpContext context)
         {
-            return new ContentResult
+            if(context.Request.Method == "POST")
             {
-                Content = JsonConvert.SerializeObject(new { success = false, message = message }),
-                ContentType = "application/json; charset=utf-8",
-                StatusCode = 401
-            };
+                await ApiController.CreateBoard(app, context);
+                return;
+            }
+
+            context.Response.ContentType = "application/json; charset=utf-8";
+
+            if (!context.Request.Cookies.ContainsKey("access_token"))
+            {
+                await ApiController.FailureResponse(context, "Access Token is missing");
+                return;
+            }
+
+            var token = context.Request.Cookies["access_token"];
+            var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
+            var result = tokenProvider.ValidateToken(token);
+            if (result == null)
+            {
+                await ApiController.FailureResponse(context, "Invalid access token");
+                return;
+            }
+
+            var dbContext = app.ApplicationServices.GetService<Db.MSSqlDbContext>();
+
+            var boardsTable = dbContext.GetTableService<Db.BoardsTableService>();
+            var boards = boardsTable.GetBoards(result.Value).ToList();
+
+            var content = JsonConvert.SerializeObject(new { success = true, boards = boards });
+            await context.Response.WriteAsync(content);
+        }
+
+        public static async Task CreateBoard(IApplicationBuilder app, HttpContext context)
+        {
+            context.Response.ContentType = "application/json; charset=utf-8";
+
+            if (!context.Request.Cookies.ContainsKey("access_token"))
+            {
+                await ApiController.FailureResponse(context, "Access Token is missing");
+                return;
+            }
+
+            var token = context.Request.Cookies["access_token"];
+            var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
+            var result = tokenProvider.ValidateToken(token);
+            if (result == null)
+            {
+                await ApiController.FailureResponse(context, "Invalid access token");
+                return;
+            }
+
+            var dbContext = app.ApplicationServices.GetService<Db.MSSqlDbContext>();
+
+            var boardsTable = dbContext.GetTableService<Db.BoardsTableService>();
+            var boards = boardsTable.GetBoards(result.Value).ToList();
+
+            var content = JsonConvert.SerializeObject(new { success = true, boards = boards });
+            await context.Response.WriteAsync(content);
+        }
+
+
+        [HttpPost]
+        IActionResult board([FromBody] string title)
+        {
+            return null;
+        }
+
+        IActionResult board()
+        {
+            return null;
+        }
+
+        private static async Task FailureResponse(HttpContext context, string message)
+        {
+            string json = JsonConvert.SerializeObject(new { success = false, message = message });
+            await context.Response.WriteAsync(json);
         }
     }
 }

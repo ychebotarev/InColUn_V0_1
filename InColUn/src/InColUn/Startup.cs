@@ -350,18 +350,32 @@ namespace InColUn
             });
         }
 
-        public void Boards(IApplicationBuilder app)
+        public void ApiBoards(IApplicationBuilder app)
         {
             app.Run(async context =>
             {
-                context.Response.ContentType = "text/html";
-                await context.Response.WriteAsync("<html><body>");
-                await context.Response.WriteAsync("Hello boards");
-                await context.Response.WriteAsync("</body></html>");
+                await Controllers.ApiController.GetBoards(app, context);
             });
 
         }
 
+        
+        public void ApiBoard(IApplicationBuilder app)
+        {
+            app.Run(async context =>
+            {
+                await Controllers.ApiController.GetBoards(app, context);
+                /*if (!context.Request.Form.ContainsKey("email")
+                    || !context.Request.Form.ContainsKey("password"))
+                {
+                    await this.ProcessAuthFailure(context, "Can't login, some fields are missing");
+                    return;
+                }
+                var method = context.Request.Method;*/
+            });
+
+        }
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
@@ -375,7 +389,9 @@ namespace InColUn
             app.Map("/auth/Facebook/callback", FacebookLoginCallback);
             app.Map("/auth/google/callback", GoogleLoginCallback);
 
-            //app.Map("/boards", Boards);
+            //looks like I can't make ApiController work and have no idea why. Too much time waisted trying.
+            app.Map("/api/v1.0/board", ApiBoard);
+            app.Map("/api/v1.0/boards", ApiBoards);
 
             if (env.IsDevelopment())
             {
@@ -396,9 +412,6 @@ namespace InColUn
                 routes.MapRoute(
                     name: "Boards",
                     template: "{controller=Boards}/{action=Index}");
-                routes.MapRoute(
-                    name: "api/v1.0",
-                    template: "{controller=Api}/{action=Index}");
             });
         }
     }

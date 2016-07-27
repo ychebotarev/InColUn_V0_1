@@ -113,7 +113,8 @@ class App{
 		this.SetCommandDispatcher('OpenSavedBoards', () => { this.contentArea.OnOpenSavedBoards()});
 		this.SetCommandDispatcher('OpenRecycledBoards', () => { this.contentArea.OnOpenRecycledBoards()});
         this.SetCommandDispatcher('HideSideBar', () => {this.sidebar.HideSideBar()});
-        this.SetCommandDispatcher('NewBoard', () => {this.NewBoard()});
+        this.SetCommandDispatcher('NewBoardDialog', () => {this.NewBoardDialog()});
+        this.SetCommandDispatcher('OnCreateBoard', () => {this.OnCreateBoard()});
     }
     
 	public SetCommandDispatcher(key:string, command:OnCommandCallback){
@@ -196,9 +197,32 @@ class App{
         return null;   
     }
 
-	private NewBoard(){
+	private NewBoardDialog(){
+        var newBoardBtn = document.getElementById('CreateNewBoardBtn');
+        newBoardBtn.onclick = (ev:MouseEvent) => { application.OnCommand({command:'OnCreateBoard'})}; 
+        
 		$('#newBoardModal').modal('show');
 	}
+
+	private OnBoardCreated(data: any, textStatus: string, jqXHR: JQueryXHR) {
+    }    
+
+    private OnCreateBoard(){
+        var boardTitle = $('#newBoardName').val();
+        var data = {
+            title     : boardTitle
+        };
+        console.log(boardTitle);
+        $('#newBoardModal').modal('hide');
+
+		$.ajax('/api/v1.0/board', {
+			type     : 'GET', 
+			data     : data, 
+            contentType: 'application/json; charset=utf-8',
+			dataType : 'json',
+			success  : (data: any, textStatus: string, jqXHR: JQueryXHR) => {this.OnBoardCreated(data, textStatus, jqXHR)}
+		});  
+    }
 }
 
 let application = new App();
