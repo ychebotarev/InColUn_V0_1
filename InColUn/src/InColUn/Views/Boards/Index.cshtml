@@ -4,7 +4,6 @@
 
 @section scripts{
     <script src="lib/medium-editor/dist/js/medium-editor.js"></script>
-    <script src="lib/jquery/dist/jquery.min.js"></script>
     <script>
         function logout()
         {
@@ -66,3 +65,5 @@
         <div class="content-area flex-fill" id='content_area'></div>
     </div>
 </div>
+
+@{Html.RenderPartial("NewBoard");}

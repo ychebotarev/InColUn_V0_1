@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
+    "bootstrap": "registry:dt/bootstrap#3.3.5+20160619023404",
     "chai": "registry:dt/chai#3.4.0+20160601211834",
     "jquery": "registry:dt/jquery#1.10.0+20160704162008",
     "mocha": "registry:dt/mocha#2.2.5+20160720003353"

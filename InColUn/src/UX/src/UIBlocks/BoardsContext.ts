@@ -2,6 +2,7 @@
 import {Dom} from '../core/dom'
 import {UIElement} from '../core/UIElement'
 import {BoardInfo} from '../components/BoardInfo'
+import {application} from '../App';
 
 export class BoardsContext extends UIElement {
 	isLoading: boolean;
@@ -59,9 +60,10 @@ export class BoardsContext extends UIElement {
 		}
 
 		var add_board = Dom.div('board-item add-board');
-		add_board.innerHTML = '  <span>Create New Board</span><div><img src="images/new_board.png"></div><i>+</i>';
+		add_board.innerHTML = '  <span>Create New Board</span><div><img src="images/new_board.png"></div><i class="btn" data-toggle="modal" data-target="#newBoardModal">+</i>';
 		self.appendChild(add_board);
-
+        add_board.onclick = (ev:MouseEvent) => { application.OnCommand({command:'NewBoardDialog'})};
+		
 		for (var key in this.boardsInfo) {
 			this.boardsInfo[key].Render(self);
 		}
