@@ -72,7 +72,7 @@ namespace InColUn
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
 
             var options = new TokenProviderOptions
-            {
+            {                    	
                 Issuer = "InColUn",
                 Audience = "All",
                 SigningCredentials = signingCredentials,

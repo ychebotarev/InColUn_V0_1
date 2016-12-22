@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using miniAuth.FacebookOAuth;
-using miniAuth.GoogleOAuth;
+using AuthLib.FacebookOAuth;
+using AuthLib.GoogleOAuth;
 using Newtonsoft.Json;
 
-namespace miniAuth.Sample
+namespace AuthLib.Sample
 {
     public class Startup
     {
