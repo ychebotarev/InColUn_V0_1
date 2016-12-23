@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using AuthLib.Token;
 using System.Security.Cryptography;
 using InColUn.Data.Repositories;
+using InColUn.DB;
 
 namespace InColUn
 {
@@ -47,7 +48,7 @@ namespace InColUn
 
             //TODO initialize logger
 
-            var msDBContext = new DB.MSSqlDbContext(connectionString);
+            var msDBContext = new MSSqlDbContext(connectionString);
             var flakeIdGenerator = new FlakeGen.Id64Generator();
 
             this.AddFacebookOAuthStrategy(authService);
@@ -58,11 +59,11 @@ namespace InColUn
             var userBoardsRepository = new UserBoardRepository(msDBContext, boardsRepository);
 
             services.AddSingleton(authService);
-            services.AddSingleton(msDBContext);
             services.AddSingleton(flakeIdGenerator);
-            services.AddSingleton(userRepository);
-            services.AddSingleton(boardsRepository);
-            services.AddSingleton(userBoardsRepository);
+            services.AddSingleton<IDbContext>(msDBContext);
+            services.AddSingleton<IUserRepository>(userRepository);
+            services.AddSingleton<IBoardsRepository>(boardsRepository);
+            services.AddSingleton<IUserBoardRepository>(userBoardsRepository);
 
             this.ConfigureToken(services);
 

@@ -34,7 +34,7 @@ gulp.task("build", function () {
 
 	return tsResult.js
 		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest('../../out/frontend'));
+		.pipe(gulp.dest('../out/frontend'));
 });
 
 gulp.task('run test', function () {
@@ -46,5 +46,5 @@ gulp.task('run test', function () {
 gulp.task('copy UI libs', function(){
 return gulp.src(['node_modules/jquery/dist/**/*', 'node_modules/medium-editor/dist/**/*'], {
             base: 'node_modules'
-        }).pipe(gulp.dest('../backend/incolun/wwwroot/lib'));
+        }).pipe(gulp.dest('../backend/src/incolun/wwwroot/lib'));
 });

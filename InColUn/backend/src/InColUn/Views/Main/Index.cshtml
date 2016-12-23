@@ -5,6 +5,8 @@
 @section scripts{
     <script src="lib/medium-editor/dist/js/medium-editor.js"></script>
     <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js"></script>
     <script>
         function logout()
         {
@@ -15,7 +17,7 @@
 }
 
 @section scripts_after_body{
-    <script src="js/boards.js"></script>
+    <script src="js/main.js"></script>
     <script>
     function openNav() {
         document.getElementById("sidebar_menu").style.width = "350px";
@@ -28,6 +30,8 @@
 }
 
 @section styles{
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="lib/medium-editor/dist/css/medium-editor.css">
     <link rel="stylesheet" href="css/boards.css">
 }

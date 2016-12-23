@@ -1,8 +1,9 @@
 const path = require('path');
 
 const PATHS = {
-  entry_file: path.join(__dirname, './src/main.ts'),
-  output_dir: path.join(__dirname, '../backend/InColUn/wwwroot/js/')
+  entry_main: path.join(__dirname, './src/main.ts'),
+  entry_login: path.join(__dirname, './src/login.ts'),
+  output_dir: path.join(__dirname, '../backend/src/InColUn/wwwroot/js/')
 };
 
 
@@ -10,9 +11,13 @@ module.exports = {
 	resolve: {
     	extensions: ['', '.js', '.ts', '.tsx']
   	},
-	entry: PATHS.entry_file,
+	entry: 
+	{ 
+		main:PATHS.entry_main, 
+		login:PATHS.entry_login 
+	},
 	output: {
-		filename: 'boards.js',
+		filename: '[name].js',
 		path: PATHS.output_dir
 	},
 	externals: {

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InColUn.Controllers
 {
-    public class BoardsController : Controller
+    public class MainController : Controller
     {
         public IActionResult Index()
         {

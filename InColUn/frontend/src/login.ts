@@ -3,7 +3,7 @@
 function successAuth(result, errorBlock, errorMsg){
   if(result.success){
     document.cookie = "access_token="+result.token;
-    window.location.replace('/boards');
+    window.location.replace('/main');
   }else{
     $(errorMsg).text(result.message);  
     $(errorBlock).show();  
