@@ -15,7 +15,7 @@ namespace InColUn.Controllers
 {
     public class ApiController 
     {
-        public static async Task GetBoards(IApplicationBuilder app, HttpContext context)
+        public static async Task ApiBoards(IApplicationBuilder app, HttpContext context)
         {
             context.Response.ContentType = "application/json; charset=utf-8";
 
@@ -27,89 +27,76 @@ namespace InColUn.Controllers
 
             var token = context.Request.Cookies["access_token"];
             var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
-            var result = tokenProvider.ValidateToken(token);
-            if(result == null)
+            var tokenId = tokenProvider.ValidateToken(token);
+            if (tokenId == null)
             {
                 await ApiController.FailureResponse(context, "Invalid access token");
                 return;
             }
 
-            var boardsRepository = app.ApplicationServices.GetService<IBoardsRepository>();
-            var boards = boardsRepository.GetBoards(result.Value).ToList();
+            if (context.Request.Method == "POST")
+            {
+                await ApiController.CreateBoard(app, context, tokenId.Value);
+                return;
+            }
+
+            await ApiController.GetBoards(app, context, tokenId.Value);
+        }
+
+        public static async Task GetBoards(IApplicationBuilder app, HttpContext context, long tokenId)
+        {
+            var userBoardsRepository = app.ApplicationServices.GetService<IUserBoardRepository>();
+            var boards = userBoardsRepository.GetUserBoards(tokenId, UserBoardRelations.Owner)
+                .Select(board => new
+                {
+                    id = board.boardid,
+                    title = board.Title,
+                    created = board.created,
+                    updated = board.updated
+                }).ToList();
 
             var content = JsonConvert.SerializeObject(new { success = true, boards = boards });
             await context.Response.WriteAsync(content);
         }
 
-        public static async Task ApiBoard(IApplicationBuilder app, HttpContext context)
+        public static async Task CreateBoard(IApplicationBuilder app, HttpContext context, long tokenId)
         {
-            if(context.Request.Method == "POST")
+            const string titleField = "title";
+
+            if (!context.Request.Form.ContainsKey(titleField))
             {
-                await ApiController.CreateBoard(app, context);
+                await ApiController.FailureResponse(context, "Board title is missing");
                 return;
             }
 
-            context.Response.ContentType = "application/json; charset=utf-8";
+            var title = context.Request.Form[titleField].ToString();
 
-            if (!context.Request.Cookies.ContainsKey("access_token"))
+            if (string.IsNullOrWhiteSpace(title) )
             {
-                await ApiController.FailureResponse(context, "Access Token is missing");
+                await ApiController.FailureResponse(context, "Can't create board, title is null or whitespace.");
                 return;
             }
 
-            var token = context.Request.Cookies["access_token"];
-            var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
-            var result = tokenProvider.ValidateToken(token);
-
-            if (result == null)
-            {
-                await ApiController.FailureResponse(context, "Invalid access token");
-                return;
-            }
+            var flakeIdGenerator = app.ApplicationServices.GetService<FlakeGen.Id64Generator>();
+            var boardId = flakeIdGenerator.GenerateId();
 
             var boardsRepository = app.ApplicationServices.GetService<IBoardsRepository>();
-            var boards = boardsRepository.GetBoards(result.Value).ToList();
-
-            var content = JsonConvert.SerializeObject(new { success = true, boards = boards });
-            await context.Response.WriteAsync(content);
-        }
-
-        public static async Task CreateBoard(IApplicationBuilder app, HttpContext context)
-        {
-            context.Response.ContentType = "application/json; charset=utf-8";
-
-            if (!context.Request.Cookies.ContainsKey("access_token"))
+            if(!boardsRepository.CreateBoard(boardId, title))
             {
-                await ApiController.FailureResponse(context, "Access Token is missing");
+                await ApiController.FailureResponse(context, "Failed to create board.");
                 return;
             }
 
-            var token = context.Request.Cookies["access_token"];
-            var tokenProvider = app.ApplicationServices.GetService<TokenProvider>();
-            var result = tokenProvider.ValidateToken(token);
-            if (result == null)
+            var userBoardRepository = app.ApplicationServices.GetService<IUserBoardRepository>();
+            if (!userBoardRepository.CreateUserBoard(tokenId, boardId, UserBoardRelations.Owner))
             {
-                await ApiController.FailureResponse(context, "Invalid access token");
+                boardsRepository.DeleteBoardById(boardId);
+                await ApiController.FailureResponse(context, "Failed to create user-board link.");
                 return;
             }
 
-            var boardsRepository = app.ApplicationServices.GetService<IBoardsRepository>();
-            var boards = boardsRepository.GetBoards(result.Value).ToList();
-
-            var content = JsonConvert.SerializeObject(new { success = true, boards = boards });
-            await context.Response.WriteAsync(content);
-        }
-
-
-        [HttpPost]
-        IActionResult board([FromBody] string title)
-        {
-            return null;
-        }
-
-        IActionResult board()
-        {
-            return null;
+            string json = JsonConvert.SerializeObject(new { success = true, title = title});
+            await context.Response.WriteAsync(json);
         }
 
         private static async Task FailureResponse(HttpContext context, string message)

@@ -20,7 +20,7 @@ export class BoardInfo extends DomElement{
     }
     
 	protected RenderSelf(self:HTMLElement){
-		var img = Dom.img('images/boards/board'+this.Id()+'.png');
+		var img = Dom.img('images/default_board.png');
 		self.appendChild(img)
 		
 		var title = Dom.div();

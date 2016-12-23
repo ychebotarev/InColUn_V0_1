@@ -1,12 +1,3 @@
-export interface IBoardInfo{
-	title:string,
-	created:Date,
-	updated:Date,
-	shared:string,	
-	saved:number,
-	kudos:number
-}
-
 export interface ISection{
     id:string,
     title:string,
@@ -18,8 +9,5 @@ export interface IBoard{
     title:string,
     created:Date,
     updated:Date,
-    shared?:number,
-    saved?:number,
-    kudos?:number,
 	sections?:ISection[]
 }

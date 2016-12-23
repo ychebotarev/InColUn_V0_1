@@ -30,5 +30,7 @@ namespace InColUn.Data.Repositories
         bool OpenBoard(long userId, long boardid);
 
         void CloseBoard(long userId, long boardid);
+
+        IEnumerable<Board> GetUserBoards(long userId, UserBoardRelations ubRelation);
     }
 }

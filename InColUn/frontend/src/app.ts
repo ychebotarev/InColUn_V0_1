@@ -104,8 +104,10 @@ class App{
                     info:{title:'Recycled Boards', guid:'50849231-ec86-44ab-93bc-61f197e240d5',commandInfo:{command:'OpenRecycledBoards'}}
                 }
         ];
-		this.sidebar.LoadTreeContainer(nodes);
-        let openPageCallback:OnCommandCallback = (param1:{}, param2:{}) =>{ this.contentArea.OnOpenPage(param1['guid'])}
+		
+		this.sidebar.LoadTreeContainer([]);
+        
+		let openPageCallback:OnCommandCallback = (param1:{}, param2:{}) =>{ this.contentArea.OnOpenPage(param1['guid'])}
 		
 		this.SetCommandDispatcher('OpenBoard', (param1:{}, param2:{}) =>{ this.OnOpenBoard(param1['guid'])});
         this.SetCommandDispatcher('OpenPage', openPageCallback);
@@ -114,6 +116,7 @@ class App{
 		this.SetCommandDispatcher('OpenRecycledBoards', () => { this.contentArea.OnOpenRecycledBoards()});
         this.SetCommandDispatcher('HideSideBar', () => {this.sidebar.HideSideBar()});
         this.SetCommandDispatcher('NewBoard', () => {this.NewBoard()});
+        this.SetCommandDispatcher('CreateNewBoardDialogOk', () => {this.CreateNewBoardDialogOk()});
     }
     
 	public SetCommandDispatcher(key:string, command:OnCommandCallback){
@@ -179,11 +182,11 @@ class App{
 			type     : 'GET', 
 			data     : {}, 
 			dataType : 'json',
-			success  : (data: any, textStatus: string, jqXHR: JQueryXHR) => {this.OnBoardLoaded(data, textStatus, jqXHR)}
+			success  : (data: any, textStatus: string, jqXHR: JQueryXHR) => {this.OnBoardLoaded(data)}
 		});  
 	}
 	
-	private OnBoardLoaded(data: any, textStatus: string, jqXHR: JQueryXHR) {
+	private OnBoardLoaded(data: any) {
 		if (!data || data.success != true){
 			return;
 		}
@@ -197,7 +200,36 @@ class App{
     }
 
 	private NewBoard(){
+		$('#newBoardTitle').val("");
 		$('#newBoardModal').modal('show');
+	}
+
+	private CreateNewBoardDialogOk(){
+		var title:string = $('#newBoardTitle').val();
+		if(title == null || title.length == 0)
+		{
+			$('#newBoardTitle').focus();
+			return;
+		}
+
+		$.ajax('/api/v1.0/boards', {
+			type     : 'POST', 
+			data     : { title : title }, 
+			dataType : 'json',
+			success  : (data: any, textStatus: string, jqXHR: JQueryXHR) => {
+				this.successCreateBoard(data);
+			}
+		});  
+	}
+
+	private successCreateBoard(result){
+		if(result.success){
+			$('#newBoardModal').modal('hide');
+			this.contentArea.OnOpenBoards();
+		}
+		else{
+
+		}
 	}
 }
 

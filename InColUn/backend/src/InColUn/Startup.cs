@@ -359,18 +359,7 @@ namespace InColUn
         {
             app.Run(async context =>
             {
-                //context.Response.ContentType = "text/html";
-                //await context.Response.WriteAsync("<html><body>");
-                //await context.Response.WriteAsync("Hello boards");
-                //await context.Response.WriteAsync("</body></html>");
-                await Controllers.ApiController.GetBoards(app, context);
-                	/*if (!context.Request.Form.ContainsKey("email")
-                    || !context.Request.Form.ContainsKey("password"))
-                	{
-                    	await this.ProcessAuthFailure(context, "Can't login, some fields are missing");
-                    	return;
-                	}
-                	var method = context.Request.Method;*/
+                await Controllers.ApiController.ApiBoards(app, context);
             });
         }
 
@@ -388,7 +377,6 @@ namespace InColUn
             app.Map("/auth/google/callback", GoogleLoginCallback);
 
             //looks like I can't make ApiController work and have no idea why. Too much time waisted trying.
-            //app.Map("/api/v1.0/board", ApiBoard);
             app.Map("/api/v1.0/boards", ApiBoards);
 
             if (env.IsDevelopment())

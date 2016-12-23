@@ -126,5 +126,13 @@ WHEN NOT MATCHED THEN
             var deleteQuery = string.Format("DELETE FROM openboards WHERE userid = {0} and boardid = {1}", userId, boardid);
             dbContext.Execute(deleteQuery);
         }
+
+        public IEnumerable<Board> GetUserBoards(long userId, UserBoardRelations ubRelation)
+        {
+            var query = string.Format("select * from boards where id in (SELECT boardid from userboards where userid = {0} and relation = '{1}')",
+                userId,
+                RelationString[(int)ubRelation]);
+            return dbContext.Query<Board>(query);
+        }
     }
 }

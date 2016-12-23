@@ -60,7 +60,8 @@ export class BoardsContext extends UIElement {
 		}
 
 		var add_board = Dom.div('board-item add-board');
-		add_board.innerHTML = '  <span>Create New Board1</span><div><img src="images/new_board.png"></div><i class="btn" data-toggle="modal" data-target="#myModal">+</i>';
+		add_board.innerHTML = '<span>Create New Board</span>'+
+		'<div><img src="images/new_board.png"></div>';
 		self.appendChild(add_board);
         add_board.onclick = (ev:MouseEvent) => { application.OnCommand({command:'NewBoard'})};
 		
